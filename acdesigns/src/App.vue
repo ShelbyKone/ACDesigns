@@ -8,6 +8,12 @@
   </v-app>
 </template>
 
+<style>
+#app {
+  background: #f8f3e7
+}
+</style>
+
 <script>
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
