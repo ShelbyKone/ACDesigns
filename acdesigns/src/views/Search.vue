@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>DesignCreate View</h1>
+    <h1>Serch View</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: "DesignCreate",
+  name: "Search",
 };
 </script>

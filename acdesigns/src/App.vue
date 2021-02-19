@@ -2,6 +2,7 @@
   <v-app>
     <Navbar />
     <v-main>
+      <Alert />
       <router-view />
     </v-main>
     <Footer />
@@ -17,12 +18,14 @@
 <script>
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Alert from "@/components/Alert"
 
 export default {
   name: "App",
   components: {
     Navbar,
     Footer,
+    Alert,
   },
 };
 </script>

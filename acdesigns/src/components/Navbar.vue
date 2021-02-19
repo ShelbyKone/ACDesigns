@@ -1,22 +1,30 @@
 <template>
   <div>
     <v-app-bar color="dark" height="80" elevation="0" app>
-      <router-link to="/">
-        <h3 class="mr-4 white--text">ACDesigns</h3>
+      <router-link to="/" class="hidden-xs-only white--text">
+        <h3>ACDesigns</h3>
+      </router-link>
+      <router-link
+        to="/"
+        class="hidden-sm-and-up"
+        :class="{ 'mr-2': $vuetify.breakpoint.xs }"
+      >
+        <v-btn color="secondary" class="elevation-0" dark fab small>
+          <v-icon dark> mdi-home </v-icon>
+        </v-btn>
       </router-link>
       <v-spacer></v-spacer>
       <v-text-field
         placeholder="Search Designs"
-        class="mr-2 mt-7"
+        class="mt-7"
         color="primary"
         prepend-inner-icon="mdi-magnify"
         dark
         filled
         rounded
         dense
-        clearable
       ></v-text-field>
-      <v-btn color="primary" class="mr-4 elevation-0" dark fab small>
+      <v-btn color="primary" class="ml-n10 elevation-0" dark fab small>
         <v-icon dark> mdi-magnify </v-icon>
       </v-btn>
       <v-spacer></v-spacer>
@@ -28,24 +36,42 @@
         dark
       >
         <template v-slot:activator="{ on }">
-          <v-btn class="elevation-0" color="secondary" v-on="on" dark fab small>
+          <v-btn
+            class="elevation-0"
+            :class="{ 'ml-2': $vuetify.breakpoint.xs }"
+            color="secondary"
+            v-on="on"
+            dark
+            fab
+            small
+          >
             <v-icon dark> mdi-account-circle </v-icon>
           </v-btn>
         </template>
         <v-list color="dark">
-          <v-list-item v-if="$store.state.isLoggedIn"
-            ><v-btn to="/register" text>
-              <span>Register</span>
-            </v-btn>
-          </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn v-on:click.prevent="logout" text>
-              <span>Logout</span>
-            </v-btn>
-          </v-list-item>
-          <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn to="/login" text>
+            <v-btn to="/login" text block>
               <span>Login</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn to="/profile" text block>
+              <span>Profile</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn to="/user-designs" text block>
+              <span>My Designs</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn to="/favorites" text block>
+              <span>My Favorites</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn v-on:click.prevent="logout" text block>
+              <span>Logout</span>
             </v-btn>
           </v-list-item>
         </v-list>
@@ -65,7 +91,6 @@ export default {
   name: "Navbar",
   data: function () {
     return {
-      profileMenu: false,
     };
   },
   methods: {
