@@ -3,12 +3,11 @@
     <v-alert
       v-model="alert"
       color="dark"
-      class="rounded-0 text-center"
+      class="rounded-0 text-center mb-0"
       transition="slide-y-transition"
       dense
       text
       dismissible
-      app
     >
       Want to post designs and save your favorites? Register
       <router-link to="/register">here</router-link>!
