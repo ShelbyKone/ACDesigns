@@ -55,6 +55,11 @@
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn to="/register" text block>
+              <span>Register</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
             <v-btn to="/profile" text block>
               <span>Profile</span>
             </v-btn>
@@ -90,8 +95,7 @@ a {
 export default {
   name: "Navbar",
   data: function () {
-    return {
-    };
+    return {};
   },
   methods: {
     logout: function () {
