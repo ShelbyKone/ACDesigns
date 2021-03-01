@@ -2,12 +2,13 @@
   <div>
     <v-hover v-slot="{ hover }">
       <v-card
-        max-width="250"
-        :elevation="hover ? 3 : 0"
+        width="250"
+        :elevation="hover ? 5 : 0"
         class="rounded-0"
         :class="{ 'on-hover': hover }"
+        align="center"
       >
-        <v-img height="150px" :src="imageURL"> </v-img>
+        <v-img :aspect-ratio="16/9" width="250" :src="imageURL"> </v-img>
         <v-card-title class="justify-center">{{ title }}</v-card-title>
         <v-card-subtitle class="pb-0 text-center">{{
           designId
@@ -29,7 +30,7 @@
             <template v-slot:activator="{ on }">
               <v-btn
                 color="secondary"
-                class="elevation-0"
+                :elevation="hover ? 3 : 0"
                 v-on="on"
                 dark
                 fab
@@ -46,7 +47,7 @@
               <router-link to="/design">
                 <v-btn
                   color="primary"
-                  class="elevation-0"
+                  :elevation="hover ? 3 : 0"
                   v-on="on"
                   dark
                   fab

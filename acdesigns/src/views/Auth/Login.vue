@@ -2,7 +2,7 @@
   <v-container>
     <v-row class="justify-center mt-12">
       <v-col class="col-md-6" align="center">
-        <v-card flat class="rounded-0">
+        <v-card class="rounded-0">
           <v-card-title class="justify-center text-h3"
             >Login</v-card-title
           >

@@ -60,6 +60,11 @@
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
+            <v-btn to="/design-create" text block>
+              <span>Post Design</span>
+            </v-btn>
+          </v-list-item>
+          <v-list-item v-if="$store.state.isLoggedIn">
             <v-btn to="/profile" text block>
               <span>Profile</span>
             </v-btn>

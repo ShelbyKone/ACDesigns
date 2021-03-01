@@ -26,7 +26,7 @@
         </v-row>
         <v-row class="mx-auto" justify="center">
           <DesignCard
-            v-for="n in 10"
+            v-for="n in 8"
             v-bind:key="n"
             :title="title"
             :imageURL="imageURL"
@@ -59,7 +59,7 @@ export default {
       title: "Flower Dress",
       imageURL:
         "https://i.pinimg.com/originals/bf/61/74/bf61742604dafed27f29956362eb7bc7.jpg",
-      designId: "1234",
+      designId: "1234-1234-1234",
       tags: [
         "dress",
         "beige",
