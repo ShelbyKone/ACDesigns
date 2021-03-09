@@ -49,17 +49,17 @@
           </v-btn>
         </template>
         <v-list color="dark">
-          <v-list-item v-if="$store.state.isLoggedIn">
+          <v-list-item v-if="!$store.state.isLoggedIn">
             <v-btn to="/login" text block>
               <span>Login</span>
             </v-btn>
           </v-list-item>
-          <v-list-item v-if="$store.state.isLoggedIn">
+          <v-list-item v-if="!$store.state.isLoggedIn">
             <v-btn to="/register" text block>
               <span>Register</span>
             </v-btn>
           </v-list-item>
-          <v-list-item v-if="$store.state.isLoggedIn">
+          <v-list-item>
             <v-btn to="/design-create" text block>
               <span>Post Design</span>
             </v-btn>
@@ -97,15 +97,17 @@ a {
 </style>
 
 <script>
+import * as auth from "../services/AuthService";
+
 export default {
   name: "Navbar",
   data: function () {
     return {};
   },
   methods: {
-    logout: function () {
-      console.log("logged out");
-      this.$router.push({ name: "Home" });
+    logout: async function () {
+      await auth.logout();
+      this.$router.push({ name: "Home" }).catch(() => {});
     },
   },
 };

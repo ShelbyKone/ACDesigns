@@ -3,13 +3,14 @@
     <v-row class="justify-center mt-12">
       <v-col class="col-md-6" align="center">
         <v-card class="rounded-0">
-          <v-card-title class="justify-center text-h3"
-            >Login</v-card-title
-          >
+          <v-card-title class="justify-center text-h3">Login</v-card-title>
           <v-card-text>
-            <v-form>
+            <v-form v-on:submit.prevent="onSubmit">
               <v-text-field
                 label="Email"
+                v-model="email"
+                autocomplete="on"
+                tabindex="1"
                 color="dark"
                 dense
                 clearable
@@ -17,6 +18,9 @@
               </v-text-field>
               <v-text-field
                 label="Password"
+                v-model="password"
+                autocomplete="on"
+                tabindex="2"
                 color="dark"
                 type="password"
                 class="mt-6"
@@ -30,9 +34,11 @@
                 </router-link>
               </div>
               <div>
-                <a class="grey--text">Forgot your password?</a>
+                <router-link to="/reset-password" class="grey--text">
+                  Forgot your password?
+                </router-link>
               </div>
-              <v-btn class="mt-3" color="dark" dark>Login</v-btn>
+              <v-btn type="submit" class="mt-3" color="dark" dark>Login</v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -42,7 +48,25 @@
 </template>
 
 <script>
+import * as auth from "../../services/AuthService";
+
 export default {
   name: "Login",
+  data: function () {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    onSubmit: async function () {
+      const user = {
+        email: this.email,
+        password: this.password,
+      };
+      await auth.login(user);
+      this.$router.push({ name: "Home" });
+    },
+  },
 };
 </script>
