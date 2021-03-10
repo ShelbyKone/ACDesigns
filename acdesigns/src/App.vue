@@ -13,6 +13,9 @@
 #app {
   background: #f8f3e7
 }
+.no-underline {
+  text-decoration: none !important;
+}
 </style>
 
 <script>

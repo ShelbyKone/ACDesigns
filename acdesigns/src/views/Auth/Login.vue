@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <v-row class="justify-center mt-12">
-      <v-col class="col-md-6" align="center">
+      <v-col class="col-xl-4 col-lg-6 col-md-8 col-sm-10" align="center">
         <v-card class="rounded-0">
-          <v-card-title class="justify-center text-h3">Login</v-card-title>
+          <v-card-title class="justify-center text-h4">Login</v-card-title>
           <v-card-text>
             <v-form v-on:submit.prevent="onSubmit">
               <v-text-field
@@ -29,6 +29,9 @@
               >
               </v-text-field>
               <div>
+                <p v-if="error" class="error--text">
+                  {{ error }}
+                </p>
                 <router-link to="/register" class="grey--text">
                   Don't have an account? Sign up here!
                 </router-link>
@@ -56,6 +59,7 @@ export default {
     return {
       email: "",
       password: "",
+      error: "",
     };
   },
   methods: {
@@ -64,8 +68,14 @@ export default {
         email: this.email,
         password: this.password,
       };
-      await auth.login(user);
-      this.$router.push({ name: "Home" });
+      try {
+        await auth.login(user);
+        this.$router.push({ name: "Home" });
+      } catch (error) {
+        this.error = error.message;
+        this.email = "";
+        this.password = "";
+      }
     },
   },
 };

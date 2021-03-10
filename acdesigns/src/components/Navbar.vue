@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar color="dark" height="80" elevation="0" app>
-      <router-link to="/" class="hidden-xs-only white--text">
+      <router-link to="/" class="hidden-xs-only white--text no-underline">
         <h3>ACDesigns</h3>
       </router-link>
       <router-link
@@ -65,7 +65,7 @@
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn to="/profile" text block>
+            <v-btn :to="{name: 'Profile', params: {id: this.$store.state.userId} }" text block>
               <span>Profile</span>
             </v-btn>
           </v-list-item>
@@ -89,12 +89,6 @@
     </v-app-bar>
   </div>
 </template>
-
-<style>
-a {
-  text-decoration: none !important;
-}
-</style>
 
 <script>
 import * as auth from "../services/AuthService";

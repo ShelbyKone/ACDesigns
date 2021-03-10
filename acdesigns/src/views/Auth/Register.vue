@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <v-row class="justify-center mt-12">
-      <v-col class="col-md-6" align="center">
+      <v-col class="col-xl-4 col-lg-6 col-md-8 col-sm-10" align="center">
         <v-card class="rounded-0">
-          <v-card-title class="justify-center text-h3"
+          <v-card-title class="justify-center text-h4"
             >Register</v-card-title
           >
           <v-card-text>

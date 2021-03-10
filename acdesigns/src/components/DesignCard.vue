@@ -20,7 +20,7 @@
             class="ma-1"
             x-small
           >
-            <router-link to="/search" class="dark--text">
+            <router-link to="/search" class="dark--text no-underline">
               {{ tag }}
             </router-link>
           </v-chip>
@@ -30,7 +30,7 @@
             <template v-slot:activator="{ on }">
               <v-btn
                 color="secondary"
-                :elevation="hover ? 3 : 0"
+                elevation="0"
                 v-on="on"
                 dark
                 fab
@@ -44,10 +44,10 @@
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <router-link to="/design">
+              <router-link :to="{name: 'Design', params: {id: '123'}}">
                 <v-btn
                   color="primary"
-                  :elevation="hover ? 3 : 0"
+                  elevation="0"
                   v-on="on"
                   dark
                   fab

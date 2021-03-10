@@ -64,12 +64,12 @@ const routes = [
     }
   },
   {
-    path: '/profile/',
+    path: '/profile/:id',
     name: 'Profile',
     component: Profile
   },
   {
-    path: '/profile-edit',
+    path: '/profile-edit/:id',
     name: 'ProfileEdit',
     component: ProfileEdit,
     beforeEnter: (to, from, next) => {
@@ -81,17 +81,17 @@ const routes = [
     }
   },
   {
-    path: '/favorites/',
+    path: '/favorites/:id',
     name: 'Favorites',
     component: Favorites,
   },
   {
-    path: '/user-designs/',
+    path: '/user-designs/:id',
     name: 'UserDesigns',
     component: UserDesigns
   },
   {
-    path: '/design/',
+    path: '/design/:id',
     name: 'Design',
     component: Design
   },
@@ -108,7 +108,7 @@ const routes = [
     }
   },
   {
-    path: '/design-edit/',
+    path: '/design-edit/:id',
     name: 'DesignEdit',
     component: DesignEdit,
     beforeEnter: (to, from, next) => {
@@ -118,6 +118,10 @@ const routes = [
         next('/login')
       }
     }
+  },
+  {
+    path: '*',
+    redirect: '/',
   },
 ]
 
