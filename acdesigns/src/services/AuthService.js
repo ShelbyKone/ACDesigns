@@ -42,9 +42,14 @@ export function register(user) {
             .then((userCredential) => {
                 user._id = userCredential.user.uid
                 http().post('/user', user)
-                resolve()
+                    .then(() => resolve())
+                    .catch((error) => {
+                        userCredential.user.delete()
+                        logout()
+                        reject(error.response.statusText)
+                    })
             })
-            .catch((error) => reject(error));
+            .catch((error) => reject(error.message));
     });
 }
 

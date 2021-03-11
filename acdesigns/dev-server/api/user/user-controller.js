@@ -3,7 +3,8 @@ import User from '../../models/user-model'
 export function createUser(req, res) {
     // check for empty values
     if (!req.body._id || !req.body.islandRep || !req.body.islandName) {
-        return res.status(400).json({ message: 'User ID, resident name, and island name are required.' }) //status: bad request
+        res.statusMessage = 'Include all required fields.'
+        return res.status(400).end() //status: bad request
     }
 
     //create the user
@@ -21,9 +22,11 @@ export function createUser(req, res) {
     user.save(error => {
         if (error) {
             if (error.code === 11000) {
-                return res.status(403).json({ message: 'A user with this ID already exists.' }) //status: forbidden
+                res.statusMessage = 'A user with this ID already exists.'
+                return res.status(403).end() //status: forbidden
             }
-            return res.status(500).json() //status: internal server error
+            res.statusMessage = "Registration failed."
+            return res.status(500).end() //status: internal server error
         }
         return res.status(201).json() //status: success, created
     })

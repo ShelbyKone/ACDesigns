@@ -2,7 +2,7 @@
   <v-container class="my-4">
     <v-row class="justify-center">
       <v-col
-        class="col-md-8 col-lg-6 col-xl-6"
+        class="col-md-8 col-lg-6 col-xl-4"
         :align="this.$vuetify.breakpoint.mdAndUp ? 'left' : 'center'"
       >
         <v-card max-width="500" class="rounded-0">
@@ -19,7 +19,7 @@
                 class="ma-1"
                 x-small
               >
-                <router-link to="/search" class="dark--text">
+                <router-link to="/search" class="dark--text no-underline">
                   {{ tag }}
                 </router-link>
               </v-chip>
@@ -28,7 +28,7 @@
         </v-card>
       </v-col>
       <v-col
-        class="col-md-4 col-lg-3 col-xl-3"
+        class="col-md-4 col-lg-3 col-xl-2"
         :align="this.$vuetify.breakpoint.mdAndUp ? 'right' : 'center'"
       >
         <v-card max-width="250" class="rounded-0" align="center">
@@ -40,7 +40,7 @@
               width="150"
             ></v-img>
             <v-card-title class="justify-center"
-              ><router-link to="/profile">Username</router-link></v-card-title
+              ><router-link to="/profile/123" class="no-underline">Username</router-link></v-card-title
             >
             <v-card-subtitle class="pb-0 text-center"
               >1234-1234-1234</v-card-subtitle
@@ -84,7 +84,7 @@
       </v-col>
     </v-row>
     <v-row class="justify-center">
-      <v-col class="col-md-12 col-lg-9 col-xl-9" align="center">
+      <v-col class="col-md-12 col-lg-9 col-xl-6" align="center">
         <v-card class="rounded-0 mt-4" align="center">
           <v-card-text
             >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

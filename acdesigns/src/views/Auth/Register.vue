@@ -91,10 +91,10 @@ export default {
           await auth.register(user);
           this.$router.push({ name: "Home" });
         } catch (error) {
-          this.error = error.message;
+          this.error = error;
         }
       } else {
-        this.error = 'Please enter all required fields.'
+        this.error = "Enter all required fields.";
       }
     },
   },

@@ -48,8 +48,7 @@ export default {
         await auth.resetPassword(this.email);
         this.$router.push({ name: "Login" });
       } catch (error) {
-        this.error = error.message;
-        this.email = ""
+        this.error = error.message
       }
     },
   },
