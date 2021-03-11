@@ -70,12 +70,12 @@
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn to="/user-designs" text block>
+            <v-btn :to="{name: 'UserDesigns', params: {id: this.$store.state.userId} }" text block>
               <span>My Designs</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn to="/favorites" text block>
+            <v-btn :to="{name: 'Favorites', params: {id: this.$store.state.userId} }" text block>
               <span>My Favorites</span>
             </v-btn>
           </v-list-item>

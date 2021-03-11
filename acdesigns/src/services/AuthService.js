@@ -1,5 +1,6 @@
 import { auth } from './firebase'
 import store from '../store/index'
+import { http } from './HttpService'
 
 // Generate the token to be passed and verified by the server
 export function generateToken() {
@@ -36,7 +37,15 @@ export function logout() {
 // Register a user using firebase, then create their
 // user profile in the database
 export function register(user) {
-    console.log(user)
+    return new Promise((resolve, reject) => {
+        auth.createUserWithEmailAndPassword(user.email, user.password)
+            .then((userCredential) => {
+                user._id = userCredential.user.uid
+                http().post('/user', user)
+                resolve()
+            })
+            .catch((error) => reject(error));
+    });
 }
 
 // Get the users username from firebase

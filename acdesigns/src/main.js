@@ -5,7 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { auth } from './services/firebase'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 let app
 auth.onAuthStateChanged((user) => {

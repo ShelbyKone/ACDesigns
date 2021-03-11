@@ -13,7 +13,6 @@
                 tabindex="1"
                 color="dark"
                 dense
-                clearable
               >
               </v-text-field>
               <v-text-field
@@ -25,7 +24,6 @@
                 type="password"
                 class="mt-6"
                 dense
-                clearable
               >
               </v-text-field>
               <div>
@@ -73,8 +71,6 @@ export default {
         this.$router.push({ name: "Home" });
       } catch (error) {
         this.error = error.message;
-        this.email = "";
-        this.password = "";
       }
     },
   },

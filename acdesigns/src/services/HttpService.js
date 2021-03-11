@@ -1,12 +1,9 @@
 import store from'../store'
 import axios from 'axios'
-import {auth} from './firebase'
+//import {auth} from './firebase'
 
-export async function http() {
+export function http() {
     return axios.create({
         baseURL: store.state.apiUrl,
-        headers: {
-            Authorization: await auth.currentUser.getIdToken()
-        }
     })
 }

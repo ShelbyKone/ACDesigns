@@ -3,20 +3,22 @@
     <v-row class="justify-center mt-12">
       <v-col class="col-xl-4 col-lg-6 col-md-8 col-sm-10" align="center">
         <v-card class="rounded-0">
-          <v-card-title class="justify-center text-h4"
-            >Register</v-card-title
-          >
+          <v-card-title class="justify-center text-h4">Register</v-card-title>
           <v-card-text>
-            <v-form>
+            <v-form v-on:submit.prevent="onSubmit">
               <v-text-field
-                label="Email"
+                label="Resident Name*"
+                v-model="islandRep"
+                tabindex="1"
                 color="dark"
                 dense
                 clearable
               >
               </v-text-field>
               <v-text-field
-                label="Username"
+                label="Island Name*"
+                v-model="islandName"
+                tabindex="2"
                 class="mt-6"
                 color="dark"
                 dense
@@ -24,7 +26,21 @@
               >
               </v-text-field>
               <v-text-field
-                label="Password"
+                label="Email*"
+                v-model="email"
+                tabindex="3"
+                autocomplete="on"
+                class="mt-6"
+                color="dark"
+                dense
+                clearable
+              >
+              </v-text-field>
+              <v-text-field
+                label="Password*"
+                v-model="password"
+                tabindex="4"
+                autocomplete="on"
                 class="mt-6"
                 color="dark"
                 type="password"
@@ -32,7 +48,14 @@
                 clearable
               >
               </v-text-field>
-              <v-btn class="mt-3" color="dark" dark>Register</v-btn>
+              <div>
+                <p v-if="error" class="error--text">
+                  {{ error }}
+                </p>
+              </div>
+              <v-btn type="submit" class="mt-3" color="dark" dark>
+                Register
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -42,7 +65,38 @@
 </template>
 
 <script>
+import * as auth from "../../services/AuthService";
+
 export default {
   name: "Register",
+  data: function () {
+    return {
+      email: "",
+      islandRep: "",
+      islandName: "",
+      password: "",
+      error: "",
+    };
+  },
+  methods: {
+    onSubmit: async function () {
+      const user = {
+        email: this.email,
+        password: this.password,
+        islandRep: this.islandRep,
+        islandName: this.islandName,
+      };
+      if (user.islandRep && user.islandName) {
+        try {
+          await auth.register(user);
+          this.$router.push({ name: "Home" });
+        } catch (error) {
+          this.error = error.message;
+        }
+      } else {
+        this.error = 'Please enter all required fields.'
+      }
+    },
+  },
 };
 </script>
