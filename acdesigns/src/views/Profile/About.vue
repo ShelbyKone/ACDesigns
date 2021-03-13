@@ -5,11 +5,11 @@
       <v-row>
         <v-col>
           <h3>Resident Name</h3>
-          <p>{{ $props.user.islandRep }}</p>
+          <p>{{ $props.user.islandRep ? $props.user.islandRep : '-' }}</p>
         </v-col>
         <v-col>
           <h3>Island Name</h3>
-          <p>{{ $props.user.islandName }}</p>
+          <p>{{ $props.user.islandName ? $props.user.islandName : '-' }}</p>
         </v-col>
         <v-col>
           <h3>Creator Code</h3>

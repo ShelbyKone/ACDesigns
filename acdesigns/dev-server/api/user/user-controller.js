@@ -1,4 +1,6 @@
 import User from '../../models/user-model'
+import aws from '../../config/aws'
+import fs from 'fs'
 
 //create the user in the database 
 export function createUser(req, res) {
@@ -44,6 +46,29 @@ export function getUser(req, res) {
             res.statusMessage = `No user with id ${req.params.id} found.`
             return res.status(404).json() //status: not found
         }
-        return res.status(200).json({ user: user })
+        return res.status(200).json({ user: user }) //status: success
+    })
+}
+
+//update a users profile
+export function updateUser(req, res) {
+    const s3 = new aws.S3();
+
+    var params = {
+        ACL: 'public-read',
+        Bucket: process.env.BUCKET_NAME,
+        Body: fs.createReadStream(req.file.path),
+        Key: `profileImage/${req.file.originalname}`
+    };
+
+    s3.upload(params, (err, data) => {
+        if (err) {
+            res.statusMessage = "Error uploading file to S3 bucket."
+            return res.status(500).json() //status: internal server error
+        }
+        if (data) {
+            console.log('File uploaded')
+            return res.status(200).json() //status: success
+        }
     })
 }

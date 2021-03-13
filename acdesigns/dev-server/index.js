@@ -1,10 +1,12 @@
 import express from 'express'
+import dotenv from 'dotenv';
 import { registerRoutes } from './routes'
-import { setEnvironment } from './config/env'
+import { setEnvironment } from './config/set-env'
 import { connectToDB } from './config/db'
 const app = express()
 const port = 3000
 
+dotenv.config();
 setEnvironment(app)
 connectToDB()
 registerRoutes(app)

@@ -5,10 +5,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createUser = createUser;
 exports.getUser = getUser;
+exports.updateUser = updateUser;
 
 var _userModel = require('../../models/user-model');
 
 var _userModel2 = _interopRequireDefault(_userModel);
+
+var _aws = require('../../config/aws');
+
+var _aws2 = _interopRequireDefault(_aws);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56,6 +65,29 @@ function getUser(req, res) {
             res.statusMessage = 'No user with id ' + req.params.id + ' found.';
             return res.status(404).json(); //status: not found
         }
-        return res.status(200).json({ user: user });
+        return res.status(200).json({ user: user }); //status: success
+    });
+}
+
+//update a users profile
+function updateUser(req, res) {
+    var s3 = new _aws2.default.S3();
+
+    var params = {
+        ACL: 'public-read',
+        Bucket: process.env.BUCKET_NAME,
+        Body: _fs2.default.createReadStream(req.file.path),
+        Key: 'profileImage/' + req.file.originalname
+    };
+
+    s3.upload(params, function (err, data) {
+        if (err) {
+            res.statusMessage = "Error uploading file to S3 bucket.";
+            return res.status(500).json(); //status: internal server error
+        }
+        if (data) {
+            console.log('File uploaded');
+            return res.status(200).json(); //status: success
+        }
     });
 }

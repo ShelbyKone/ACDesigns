@@ -26,23 +26,17 @@
         <v-row class="mt-4" justify="center">
           <v-btn
             :to="{ name: 'About', params: { id: $route.params.id } }"
-            class="mx-6"
-            color="dark"
-            dark
+            class="mx-6 secondary black--text"
             >About</v-btn
           >
           <v-btn
             :to="{ name: 'Favorites', params: { id: $route.params.id } }"
-            class="mx-6"
-            color="dark"
-            dark
+            class="mx-6 secondary black--text"
             >Favorites</v-btn
           >
           <v-btn
             :to="{ name: 'Designs', params: { id: $route.params.id } }"
-            class="mx-6"
-            color="dark"
-            dark
+            class="mx-6 secondary black--text"
             >Designs</v-btn
           >
         </v-row>
