@@ -53,6 +53,11 @@ export function register(user) {
     });
 }
 
+// Get a single user by their id
+export function getUser(id) {
+    return http().get(`/user/${id}`)
+}
+
 // Get the users username from firebase
 export function getUsername() {
     const user = auth.currentUser

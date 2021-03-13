@@ -39,19 +39,20 @@
               :aspect-ratio="9 / 9"
               width="150"
             ></v-img>
-            <v-card-title class="justify-center"
-              ><router-link to="/profile/123" class="no-underline">Username</router-link></v-card-title
-            >
+            <v-card-title class="justify-center">
+              <router-link
+                :to="{ name: 'About', params: { id: '123' } }"
+                class="black--text no-underline"
+              >
+                Username
+              </router-link>
+            </v-card-title>
             <v-card-subtitle class="pb-0 text-center"
               >1234-1234-1234</v-card-subtitle
             >
           </v-card-text>
         </v-card>
-        <v-card
-          max-width="250"
-          class="rounded-0 mt-10"
-          align="center"
-        >
+        <v-card max-width="250" class="rounded-0 mt-10" align="center">
           <v-row>
             <v-col>
               <v-card-text class="mt-1">
@@ -94,11 +95,10 @@
           >
         </v-card>
         <v-expansion-panels>
-        <v-expansion-panel class="mt-4 white">
-          <v-expansion-panel-header> Comments </v-expansion-panel-header>
-          <v-expansion-panel-content>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+          <v-expansion-panel class="mt-4 white">
+            <v-expansion-panel-header> Comments </v-expansion-panel-header>
+            <v-expansion-panel-content> </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
     </v-row>

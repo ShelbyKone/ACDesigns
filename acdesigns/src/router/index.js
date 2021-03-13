@@ -8,7 +8,8 @@ import ResetPassword from '../views/Auth/ResetPassword.vue'
 import Profile from '../views/Profile/Profile.vue'
 import ProfileEdit from '../views/Profile/ProfileEdit.vue'
 import Favorites from '../views/Profile/Favorites.vue'
-import UserDesigns from '../views/Profile/UserDesigns.vue'
+import Designs from '../views/Profile/Designs.vue'
+import About from '../views/Profile/About.vue'
 import Design from '../views/Design/Design.vue'
 import DesignCreate from '../views/Design/DesignCreate.vue'
 import DesignEdit from '../views/Design/DesignEdit.vue'
@@ -55,18 +56,28 @@ const routes = [
     path: '/reset-password',
     name: 'ResetPassword',
     component: ResetPassword,
-    beforeEnter: (to, from, next) => {
-      if (auth.isLoggedIn()) {
-        next('/')
-      } else {
-        next()
-      }
-    }
   },
   {
     path: '/profile/:id',
     name: 'Profile',
-    component: Profile
+    component: Profile,
+    children: [
+      {
+        path: 'about',
+        name: 'About',
+        component: About
+      },
+      {
+        path: 'favorites',
+        name: 'Favorites',
+        component: Favorites
+      },
+      {
+        path: 'designs',
+        name: 'Designs',
+        component: Designs
+      }
+    ]
   },
   {
     path: '/profile-edit/:id',
@@ -79,16 +90,6 @@ const routes = [
         next('/login')
       }
     }
-  },
-  {
-    path: '/favorites/:id',
-    name: 'Favorites',
-    component: Favorites,
-  },
-  {
-    path: '/user-designs/:id',
-    name: 'UserDesigns',
-    component: UserDesigns
   },
   {
     path: '/design/:id',

@@ -6,7 +6,7 @@
       </router-link>
       <router-link
         to="/"
-        class="hidden-sm-and-up"
+        class="hidden-sm-and-up no-underline"
         :class="{ 'mr-2': $vuetify.breakpoint.xs }"
       >
         <v-btn color="secondary" class="elevation-0" dark fab small>
@@ -50,37 +50,37 @@
         </template>
         <v-list color="dark">
           <v-list-item v-if="!$store.state.isLoggedIn">
-            <v-btn to="/login" text block>
+            <v-btn to="/login" text block exact>
               <span>Login</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="!$store.state.isLoggedIn">
-            <v-btn to="/register" text block>
+            <v-btn to="/register" text block exact>
               <span>Register</span>
             </v-btn>
           </v-list-item>
           <v-list-item>
-            <v-btn to="/design-create" text block>
+            <v-btn to="/design-create" text block exact>
               <span>Post Design</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'Profile', params: {id: this.$store.state.userId} }" text block>
+            <v-btn :to="{name: 'About', params: {id: this.$store.state.userId} }" text block exact>
               <span>Profile</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'UserDesigns', params: {id: this.$store.state.userId} }" text block>
+            <v-btn :to="{name: 'Designs', params: {id: this.$store.state.userId} }" text block exact>
               <span>My Designs</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'Favorites', params: {id: this.$store.state.userId} }" text block>
+            <v-btn :to="{name: 'Favorites', params: {id: this.$store.state.userId} }" text block exact>
               <span>My Favorites</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn v-on:click.prevent="logout" text block>
+            <v-btn v-on:click.prevent="logout" text block exact>
               <span>Logout</span>
             </v-btn>
           </v-list-item>

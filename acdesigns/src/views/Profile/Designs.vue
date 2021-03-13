@@ -20,7 +20,7 @@
 import DesignCard from "@/components/DesignCard";
 
 export default {
-  name: "Favorites",
+  name: "Designs",
   data: function () {
     return {
       title: "Flower Dress",

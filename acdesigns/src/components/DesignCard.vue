@@ -3,7 +3,7 @@
     <v-hover v-slot="{ hover }">
       <v-card
         width="250"
-        :elevation="hover ? 5 : 0"
+        :elevation="hover ? 2 : 0"
         class="rounded-0"
         :class="{ 'on-hover': hover }"
         align="center"

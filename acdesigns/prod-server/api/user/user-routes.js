@@ -20,7 +20,7 @@ var router = _express2.default.Router();
 
 
 //return a user by id
-//router.get('/user', controller.getUser)
+router.get('/user/:id', controller.getUser);
 
 //update a user
 //router.put('/user', controller.updateUser)

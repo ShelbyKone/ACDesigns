@@ -12,6 +12,7 @@
                 autocomplete="on"
                 tabindex="1"
                 color="dark"
+                clearable
                 dense
               >
               </v-text-field>
@@ -23,6 +24,7 @@
                 color="dark"
                 type="password"
                 class="mt-6"
+                clearable
                 dense
               >
               </v-text-field>

@@ -3,7 +3,7 @@ const router = express.Router()
 import * as controller from './user-controller'
 
 //return a user by id
-//router.get('/user', controller.getUser)
+router.get('/user/:id', controller.getUser)
 
 //update a user
 //router.put('/user', controller.updateUser)
