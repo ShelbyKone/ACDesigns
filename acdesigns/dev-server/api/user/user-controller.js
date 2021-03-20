@@ -52,23 +52,42 @@ export function getUser(req, res) {
 
 //update a users profile
 export function updateUser(req, res) {
-    const s3 = new aws.S3();
+    const user = new User(req.body)
 
-    var params = {
-        ACL: 'public-read',
-        Bucket: process.env.BUCKET_NAME,
-        Body: fs.createReadStream(req.file.path),
-        Key: `profileImage/${req.file.originalname}`
-    };
+    if (req.file) { //if theres an image, upload it to s3 then update the user
+        const s3 = new aws.S3();
 
-    s3.upload(params, (err, data) => {
-        if (err) {
-            res.statusMessage = "Error uploading file to S3 bucket."
-            return res.status(500).json() //status: internal server error
-        }
-        if (data) {
-            console.log('File uploaded')
-            return res.status(200).json() //status: success
-        }
-    })
+        var params = {
+            ACL: 'public-read',
+            Bucket: process.env.BUCKET_NAME,
+            Body: fs.createReadStream(req.file.path),
+            Key: `profileImage/${user._id}`
+        };
+
+        s3.upload(params, (err, data) => {
+            if (err) {
+                res.statusMessage = "Error uploading file to S3 bucket."
+                return res.status(500).json() //status: internal server error
+            }
+            if (data) {
+                fs.unlinkSync(req.file.path) //empty uploads folder
+
+                user.image = data.Location
+                User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+                    if (error) {
+                        return res.status(500).json() //status: internal server error
+                    }
+                    return res.status(204).json() //status: success, no content
+                })
+            }
+        })
+    }
+    else { //update the user without uploading an image
+        User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+            if (error) {
+                return res.status(500).json() //status: internal server error
+            }
+            return res.status(204).json() //status: success, no content
+        })
+    }
 }

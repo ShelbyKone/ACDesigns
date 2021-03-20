@@ -71,23 +71,43 @@ function getUser(req, res) {
 
 //update a users profile
 function updateUser(req, res) {
-    var s3 = new _aws2.default.S3();
+    var user = new _userModel2.default(req.body);
 
-    var params = {
-        ACL: 'public-read',
-        Bucket: process.env.BUCKET_NAME,
-        Body: _fs2.default.createReadStream(req.file.path),
-        Key: 'profileImage/' + req.file.originalname
-    };
+    if (req.file) {
+        //if theres an image, upload it to s3 then update the user
+        var s3 = new _aws2.default.S3();
 
-    s3.upload(params, function (err, data) {
-        if (err) {
-            res.statusMessage = "Error uploading file to S3 bucket.";
-            return res.status(500).json(); //status: internal server error
-        }
-        if (data) {
-            console.log('File uploaded');
-            return res.status(200).json(); //status: success
-        }
-    });
+        var params = {
+            ACL: 'public-read',
+            Bucket: process.env.BUCKET_NAME,
+            Body: _fs2.default.createReadStream(req.file.path),
+            Key: 'profileImage/' + user._id
+        };
+
+        s3.upload(params, function (err, data) {
+            if (err) {
+                res.statusMessage = "Error uploading file to S3 bucket.";
+                return res.status(500).json(); //status: internal server error
+            }
+            if (data) {
+                _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+
+                user.image = data.Location;
+                _userModel2.default.findOneAndUpdate({ _id: user._id }, user, function (error) {
+                    if (error) {
+                        return res.status(500).json(); //status: internal server error
+                    }
+                    return res.status(204).json(); //status: success, no content
+                });
+            }
+        });
+    } else {
+        //update the user without uploading an image
+        _userModel2.default.findOneAndUpdate({ _id: user._id }, user, function (error) {
+            if (error) {
+                return res.status(500).json(); //status: internal server error
+            }
+            return res.status(204).json(); //status: success, no content
+        });
+    }
 }

@@ -16,6 +16,10 @@ var _userController = require('./user-controller');
 
 var controller = _interopRequireWildcard(_userController);
 
+var _authService = require('../../services/auth-service');
+
+var auth = _interopRequireWildcard(_authService);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -27,7 +31,7 @@ var upload = (0, _multer2.default)({ dest: 'uploads/' });
 router.get('/user/:id', controller.getUser);
 
 //update a user
-router.put('/user', upload.single('image'), controller.updateUser);
+router.put('/user', upload.single('image'), auth.requireLogin, controller.updateUser);
 
 //create a user
 router.post('/user', controller.createUser);
