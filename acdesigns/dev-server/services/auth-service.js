@@ -1,34 +1,40 @@
 import firebase from '../config/firebase'
-import regeneratorRuntime from "regenerator-runtime";
 
 //make sure the user is logged in to make certain requests
-export const requireLogin =  async function(req, res, next) {
-    const token = await verifyToken(req)
-    if (!token) {
-        return res.status(401).json({ message: 'You must be logged in' })
-    }
-    next()
+export function requireLogin(req, res, next) {
+    verifyToken(req)
+        .then(() => {
+            next()
+        })
+        .catch(() => {
+            return res.status(401).json({ message: 'You must be logged in' })
+        })
 }
 
-export const getUserId = async function(req) {
-    const token = await verifyToken(req)
-    if (!token) {
-        return null
-    } else {
-        return token.uid
-    }
+export function getUserId(req) {
+    return new Promise((resolve, reject) => {
+        verifyToken(req)
+            .then((token) => {
+                resolve(token.uid)
+            })
+            .catch(() => {
+                reject()
+            })
+    })
 }
 
 function verifyToken(req) {
-    const token = req.headers.authorization || req.headers['authorization']
-    if (!token) {
-        return null
-    }
-    firebase.auth().verifyIdToken(idToken)
-        .then((decodedToken) => {
-            return decodedToken
-        })
-        .catch(() => {
-            return null
-        })
+    return new Promise((resolve, reject) => {
+        const token = req.headers.authorization || req.headers['authorization']
+        if (!token) {
+            reject()
+        }
+        firebase.auth().verifyIdToken(token)
+            .then((decodedToken) => {
+                resolve(decodedToken)
+            })
+            .catch(() => {
+                reject()
+            })
+    })
 }

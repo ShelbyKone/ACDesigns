@@ -1,10 +1,17 @@
 import { auth } from './firebase'
 import store from '../store/index'
-import { http } from './HttpService'
+import axios from 'axios'
 
 // Generate the token to be passed and verified by the server
-export function generateToken() {
-
+function generateToken() {
+    return new Promise((resolve, reject) => {
+        auth.currentUser.getIdToken()
+            .then((token) => {
+                resolve(token)
+            }).catch((error) => {
+                reject(error)
+            });
+    })
 }
 
 // Check with firebase to see if the user is logged in
@@ -41,7 +48,9 @@ export function register(user) {
         auth.createUserWithEmailAndPassword(user.email, user.password)
             .then((userCredential) => {
                 user._id = userCredential.user.uid
-                http().post('/user', user)
+                axios.create({
+                    baseURL: store.state.apiUrl,
+                }).post('/user', user)
                     .then(() => resolve())
                     .catch((error) => {
                         userCredential.user.delete()
@@ -55,7 +64,24 @@ export function register(user) {
 
 // Get a single user by their id
 export function getUser(id) {
-    return http().get(`/user/${id}`)
+    return axios.create({
+        baseURL: store.state.apiUrl,
+    }).get(`/user/${id}`)
+}
+
+// Update user profile
+// TEMP
+export async function updateUser(formData) {
+    try {
+        const token = await generateToken()
+        return axios.create({
+            baseURL: store.state.apiUrl,
+            headers: { Authorization: token }
+        }).put(`/user`, formData)
+    }
+    catch (error) {
+        return error
+    }
 }
 
 // Get the users username from firebase

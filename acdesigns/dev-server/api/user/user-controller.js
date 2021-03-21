@@ -1,5 +1,6 @@
 import User from '../../models/user-model'
 import aws from '../../config/aws'
+import * as auth from '../../services/auth-service'
 import fs from 'fs'
 
 //create the user in the database 
@@ -54,25 +55,37 @@ export function getUser(req, res) {
 export function updateUser(req, res) {
     const user = new User(req.body)
 
-    if (req.file) { //if theres an image, upload it to s3 then update the user
-        const s3 = new aws.S3();
+    auth.getUserId(req).then((id) => { //get the users id
+        if (id == user._id) { //only allow the user who made the request to update their own profile
+            if (req.file) { //if theres an image, upload it to s3 then update the user
+                const s3 = new aws.S3();
 
-        var params = {
-            ACL: 'public-read',
-            Bucket: process.env.BUCKET_NAME,
-            Body: fs.createReadStream(req.file.path),
-            Key: `profileImage/${user._id}`
-        };
+                var params = {
+                    ACL: 'public-read',
+                    Bucket: process.env.BUCKET_NAME,
+                    Body: fs.createReadStream(req.file.path),
+                    Key: `profileImage/${user._id}`
+                };
 
-        s3.upload(params, (err, data) => {
-            if (err) {
-                res.statusMessage = "Error uploading file to S3 bucket."
-                return res.status(500).json() //status: internal server error
+                s3.upload(params, (err, data) => {
+                    if (err) {
+                        res.statusMessage = "Error uploading file to S3 bucket."
+                        return res.status(500).json() //status: internal server error
+                    }
+                    if (data) {
+                        fs.unlinkSync(req.file.path) //empty uploads folder
+
+                        user.image = data.Location
+                        User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+                            if (error) {
+                                return res.status(500).json() //status: internal server error
+                            }
+                            return res.status(204).json() //status: success, no content
+                        })
+                    }
+                })
             }
-            if (data) {
-                fs.unlinkSync(req.file.path) //empty uploads folder
-
-                user.image = data.Location
+            else { //update the user without uploading an image
                 User.findOneAndUpdate({ _id: user._id }, user, (error) => {
                     if (error) {
                         return res.status(500).json() //status: internal server error
@@ -80,14 +93,12 @@ export function updateUser(req, res) {
                     return res.status(204).json() //status: success, no content
                 })
             }
+        }
+        else { //if the token user id doesn't match the request user id
+            return res.status(401).json({ message: 'You are not authorized to make this request.' })
+        }
+    })
+        .catch((error) => { //if unable to get users id
+            return res.status(500).json() //status: internal server error
         })
-    }
-    else { //update the user without uploading an image
-        User.findOneAndUpdate({ _id: user._id }, user, (error) => {
-            if (error) {
-                return res.status(500).json() //status: internal server error
-            }
-            return res.status(204).json() //status: success, no content
-        })
-    }
 }
