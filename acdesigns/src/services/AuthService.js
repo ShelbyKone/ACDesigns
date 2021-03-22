@@ -80,7 +80,7 @@ export async function updateUser(formData) {
         }).put(`/user`, formData)
     }
     catch (error) {
-        return error
+        return error.response.statusText
     }
 }
 

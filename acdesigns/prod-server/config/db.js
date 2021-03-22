@@ -15,7 +15,8 @@ function connectToDB() {
     _mongoose2.default.connect(process.env.DB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
     }, function (error) {
         if (error) {
             console.log('Unable to connect to database');

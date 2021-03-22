@@ -4,7 +4,8 @@ export function connectToDB() {
     mongoose.connect(process.env.DB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
     },
         error => {
             if (error) {

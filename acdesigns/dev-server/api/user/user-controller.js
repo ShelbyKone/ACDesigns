@@ -41,11 +41,11 @@ export function getUser(req, res) {
     User.findOne({ _id: req.params.id }, (error, user) => {
         if (error) {
             res.statusMessage = "Error retrieving user from database."
-            return res.status(500).json() //status: internal server error
+            return res.status(500).end() //status: internal server error
         }
         if (!user) {
             res.statusMessage = `No user with id ${req.params.id} found.`
-            return res.status(404).json() //status: not found
+            return res.status(404).end() //status: not found
         }
         return res.status(200).json({ user: user }) //status: success
     })
@@ -58,19 +58,28 @@ export function updateUser(req, res) {
     auth.getUserId(req).then((id) => { //get the users id
         if (id == user._id) { //only allow the user who made the request to update their own profile
             if (req.file) { //if theres an image, upload it to s3 then update the user
+
+                if (req.file.mimetype != 'image/png' && req.file.mimetype != 'image/jpeg') { //if the file is not an image
+                    fs.unlinkSync(req.file.path) //empty uploads folder
+                    res.statusMessage = 'File must be of type .jpeg or .png'
+                    return res.status(422).end() //status: Unprocessable Entity
+                }
+
                 const s3 = new aws.S3();
 
                 var params = {
                     ACL: 'public-read',
                     Bucket: process.env.BUCKET_NAME,
                     Body: fs.createReadStream(req.file.path),
-                    Key: `profileImage/${user._id}`
+                    Key: `profileImage/${user._id}`,
+                    ContentType: req.file.mimetype
                 };
 
                 s3.upload(params, (err, data) => {
                     if (err) {
-                        res.statusMessage = "Error uploading file to S3 bucket."
-                        return res.status(500).json() //status: internal server error
+                        fs.unlinkSync(req.file.path) //empty uploads folder
+                        res.statusMessage = 'Error uploading file.'
+                        return res.status(500).end() //status: internal server error
                     }
                     if (data) {
                         fs.unlinkSync(req.file.path) //empty uploads folder
@@ -78,7 +87,8 @@ export function updateUser(req, res) {
                         user.image = data.Location
                         User.findOneAndUpdate({ _id: user._id }, user, (error) => {
                             if (error) {
-                                return res.status(500).json() //status: internal server error
+                                res.statusMessage = 'Server Error'
+                                return res.status(500).end() //status: internal server error
                             }
                             return res.status(204).json() //status: success, no content
                         })
@@ -88,17 +98,20 @@ export function updateUser(req, res) {
             else { //update the user without uploading an image
                 User.findOneAndUpdate({ _id: user._id }, user, (error) => {
                     if (error) {
-                        return res.status(500).json() //status: internal server error
+                        res.statusMessage = 'Server Error'
+                        return res.status(500).end() //status: internal server error
                     }
                     return res.status(204).json() //status: success, no content
                 })
             }
         }
         else { //if the token user id doesn't match the request user id
-            return res.status(401).json({ message: 'You are not authorized to make this request.' })
+            res.statusMessage = 'You are not authorized to make this request.'
+            return res.status(401).end()
         }
     })
         .catch((error) => { //if unable to get users id
-            return res.status(500).json() //status: internal server error
+            res.statusMessage = 'Server Error'
+            return res.status(500).end() //status: internal server error
         })
 }

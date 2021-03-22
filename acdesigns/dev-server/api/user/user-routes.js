@@ -10,7 +10,7 @@ const upload= multer({ dest: 'uploads/' })
 router.get('/user/:id', controller.getUser)
 
 //update a user
-router.put('/user', upload.single('image'), auth.requireLogin, controller.updateUser)
+router.put('/user', auth.requireLogin, upload.single('image'), controller.updateUser)
 
 //create a user
 router.post('/user', controller.createUser)

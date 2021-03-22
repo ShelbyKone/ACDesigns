@@ -2,9 +2,11 @@
   <v-container>
     <v-row class="justify-center mt-1">
       <v-col class="col-md-6" align="center">
-        <v-form v-on:submit.prevent="onSubmit">
+        <v-form
+          v-on:submit.prevent="onSubmit"
+        >
           <v-text-field
-            label="Email"
+            label="Email*"
             v-model="email"
             color="dark"
             filled
@@ -13,7 +15,7 @@
           >
           </v-text-field>
           <v-text-field
-            label="Resident Name"
+            label="Resident Name*"
             v-model="user.islandRep"
             color="dark"
             filled
@@ -22,7 +24,7 @@
           >
           </v-text-field>
           <v-text-field
-            label="Island Name"
+            label="Island Name*"
             v-model="user.islandName"
             color="dark"
             filled
@@ -54,13 +56,18 @@
             prepend-icon="mdi-camera"
             color="dark"
           ></v-file-input>
-          <v-btn type="submit" class="mt-3" color="dark" dark>Update</v-btn>
-          <v-progress-circular
-            v-if="loading"
-            class="mt-3 ml-3"
-            color="primary"
-            indeterminate
-          ></v-progress-circular>
+          <div>
+            <p v-if="error" class="error--text">
+              {{ error }}
+            </p>
+            <v-btn type="submit" class="mt-3" color="dark" dark>Update</v-btn>
+            <v-progress-circular
+              v-if="loading"
+              class="mt-3 ml-3"
+              color="primary"
+              indeterminate
+            ></v-progress-circular>
+          </div>
         </v-form>
       </v-col>
     </v-row>
@@ -75,6 +82,7 @@ export default {
   name: "ProfileEdit",
   data: function () {
     return {
+      error: "",
       email: "",
       user: {},
       image: null,
@@ -83,22 +91,29 @@ export default {
   },
   methods: {
     onSubmit: async function () {
-      this.loading = true;
+      if (this.email && this.user.islandRep && this.user.islandName) {
+        this.loading = true;
 
-      const formData = new FormData();
-      formData.append("_id", this.user._id);
-      formData.append("islandRep", this.user.islandRep);
-      formData.append("islandName", this.user.islandName);
-      formData.append("creatorCode", this.user.creatorCode);
-      formData.append("about", this.user.about);
-      if (this.image) formData.append("image", this.image);
+        let formData = new FormData();
+        formData.append("_id", this.user._id);
+        formData.append("islandRep", this.user.islandRep);
+        formData.append("islandName", this.user.islandName);
+        formData.append("creatorCode", this.user.creatorCode);
+        formData.append("about", this.user.about);
 
-      try {
-        await auth.updateUser(formData);
-        this.$router.push({ name: "About", params: { id: this.user._id } });
-      } catch (error) {
-        this.loading = false
-        console.log(error);
+        if (this.image) {
+          formData.append("image", this.image);
+        }
+
+        try {
+          await auth.updateUser(formData);
+          this.$router.push({ name: "About", params: { id: this.user._id } });
+        } catch (error) {
+          this.loading = false;
+          this.error = error;
+        }
+      } else {
+        this.error = "Enter all required fields.";
       }
     },
   },
