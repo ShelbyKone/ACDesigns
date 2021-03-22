@@ -90,6 +90,12 @@ export function getUsername() {
     return user.displayName
 }
 
+// Get the users email from firebase
+export function getEmail() {
+    const user = auth.currentUser
+    return user.email
+}
+
 // Get the users id from firebase
 export function getUserId() {
     const user = auth.currentUser

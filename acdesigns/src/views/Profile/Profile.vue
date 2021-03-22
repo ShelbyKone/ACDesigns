@@ -3,11 +3,23 @@
     <v-row justify="center" class="mt-2">
       <v-col align="center">
         <v-img
-          :src="user.image ? user.image : 'https://shelbyk-4900-capstone-project.s3.amazonaws.com/default_profile_pic.png'"
+          :src="
+            user.image
+              ? user.image
+              : require('@/assets/default_profile_pic.png')
+          "
           class="rounded-circle"
           :aspect-ratio="9 / 9"
           width="150"
-        ></v-img>
+          ><template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular
+                indeterminate
+                color="primary"
+              ></v-progress-circular>
+            </v-row>
+          </template>
+        </v-img>
         <h1 class="mt-2">{{ user.islandRep }}</h1>
         <v-row
           v-if="$store.state.userId == $route.params.id"

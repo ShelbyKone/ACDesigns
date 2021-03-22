@@ -2,15 +2,37 @@
   <v-container>
     <v-row class="justify-center mt-1">
       <v-col class="col-md-6" align="center">
-        <v-form>
-          <v-text-field label="Email" color="dark" filled dense clearable>
+        <v-form v-on:submit.prevent="onSubmit">
+          <v-text-field
+            label="Email"
+            v-model="email"
+            color="dark"
+            filled
+            dense
+            disabled
+          >
           </v-text-field>
-          <v-text-field label="Island Rep" color="dark" filled dense clearable>
+          <v-text-field
+            label="Resident Name"
+            v-model="user.islandRep"
+            color="dark"
+            filled
+            dense
+            clearable
+          >
           </v-text-field>
-          <v-text-field label="Island Name" color="dark" filled dense clearable>
+          <v-text-field
+            label="Island Name"
+            v-model="user.islandName"
+            color="dark"
+            filled
+            dense
+            clearable
+          >
           </v-text-field>
           <v-text-field
             label="Creator Code"
+            v-model="user.creatorCode"
             color="dark"
             filled
             dense
@@ -18,19 +40,27 @@
           >
           </v-text-field>
           <v-textarea
-            name="input-7-1"
             label="About"
+            v-model="user.about"
             color="dark"
             filled
             flat
           ></v-textarea>
-          <div>
-            <v-btn small>Upload Image</v-btn>
-            <span class="ml-3">No image selected.</span>
-          </div>
-          <div class="mt-6">
-            <v-btn color="dark" dark>Update</v-btn>
-          </div>
+          <v-file-input
+            label="Profile Image"
+            v-model="image"
+            class="mt-n4"
+            accept=".png, .jpeg, .jpg"
+            prepend-icon="mdi-camera"
+            color="dark"
+          ></v-file-input>
+          <v-btn type="submit" class="mt-3" color="dark" dark>Update</v-btn>
+          <v-progress-circular
+            v-if="loading"
+            class="mt-3 ml-3"
+            color="primary"
+            indeterminate
+          ></v-progress-circular>
         </v-form>
       </v-col>
     </v-row>
@@ -38,7 +68,47 @@
 </template>
 
 <script>
+import * as auth from "./../../services/AuthService";
+import FormData from "form-data";
+
 export default {
   name: "ProfileEdit",
+  data: function () {
+    return {
+      email: "",
+      user: {},
+      image: null,
+      loading: false,
+    };
+  },
+  methods: {
+    onSubmit: async function () {
+      this.loading = true;
+
+      const formData = new FormData();
+      formData.append("_id", this.user._id);
+      formData.append("islandRep", this.user.islandRep);
+      formData.append("islandName", this.user.islandName);
+      formData.append("creatorCode", this.user.creatorCode);
+      formData.append("about", this.user.about);
+      if (this.image) formData.append("image", this.image);
+
+      try {
+        await auth.updateUser(formData);
+        this.$router.push({ name: "About", params: { id: this.user._id } });
+      } catch (error) {
+        this.loading = false
+        console.log(error);
+      }
+    },
+  },
+  beforeRouteEnter(to, from, next) {
+    auth.getUser(to.params.id).then((res) => {
+      next((vm) => {
+        vm.user = res.data.user;
+        vm.email = auth.getEmail();
+      });
+    });
+  },
 };
 </script>
