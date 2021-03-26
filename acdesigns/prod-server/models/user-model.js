@@ -11,7 +11,7 @@ var _mongoose2 = _interopRequireDefault(_mongoose);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var userSchema = new _mongoose2.default.Schema({
-    _id: { type: String },
+    _id: String,
     islandRep: String,
     islandName: String,
     creatorCode: String,

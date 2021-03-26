@@ -5,10 +5,11 @@
         <v-card class="rounded-0">
           <v-card-title class="justify-center text-h4">Login</v-card-title>
           <v-card-text>
-            <v-form v-on:submit.prevent="onSubmit">
+            <v-form v-on:submit.prevent="onSubmit" ref="form">
               <v-text-field
                 label="Email"
                 v-model="email"
+                :rules="rules.required"
                 autocomplete="on"
                 tabindex="1"
                 color="dark"
@@ -19,6 +20,7 @@
               <v-text-field
                 label="Password"
                 v-model="password"
+                :rules="rules.required"
                 autocomplete="on"
                 tabindex="2"
                 color="dark"
@@ -51,7 +53,7 @@
 </template>
 
 <script>
-import * as auth from "../../services/AuthService";
+import * as auth from "../../services/UserService";
 
 export default {
   name: "Login",
@@ -60,19 +62,24 @@ export default {
       email: "",
       password: "",
       error: "",
+      rules: {
+        required: [(v) => !!v || "Required"],
+      },
     };
   },
   methods: {
     onSubmit: async function () {
-      const user = {
-        email: this.email,
-        password: this.password,
-      };
-      try {
-        await auth.login(user);
-        this.$router.push({ name: "Home" });
-      } catch (error) {
-        this.error = error.message;
+      if (this.$refs.form.validate()) {
+        const user = {
+          email: this.email,
+          password: this.password,
+        };
+        try {
+          await auth.login(user);
+          this.$router.push({ name: "Home" });
+        } catch (error) {
+          this.error = error.message;
+        }
       }
     },
   },

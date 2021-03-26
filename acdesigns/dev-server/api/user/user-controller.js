@@ -1,5 +1,6 @@
 import User from '../../models/user-model'
 import aws from '../../config/aws'
+import mongoose from 'mongoose'
 import * as auth from '../../services/auth-service'
 import fs from 'fs'
 
@@ -29,6 +30,7 @@ export function createUser(req, res) {
                 res.statusMessage = 'A user with this ID already exists.'
                 return res.status(403).end() //status: forbidden
             }
+            console.log(error)
             res.statusMessage = "Registration failed."
             return res.status(500).end() //status: internal server error
         }
@@ -107,11 +109,11 @@ export function updateUser(req, res) {
         }
         else { //if the token user id doesn't match the request user id
             res.statusMessage = 'You are not authorized to make this request.'
-            return res.status(401).end()
+            return res.status(401).end() //status: unauthorized
         }
     })
         .catch((error) => { //if unable to get users id
-            res.statusMessage = 'Server Error'
+            res.statusMessage = 'Unable to get user id'
             return res.status(500).end() //status: internal server error
         })
 }

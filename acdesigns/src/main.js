@@ -3,12 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { auth } from './services/firebase'
+import { fb } from './services/firebase'
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 let app
-auth.onAuthStateChanged((user) => {
+fb.onAuthStateChanged((user) => {
   if (!app) {
     app = new Vue({
       router,

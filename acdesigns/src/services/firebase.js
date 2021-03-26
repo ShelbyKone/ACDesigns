@@ -17,8 +17,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Utils
-const auth = firebase.auth()
+const fb = firebase.auth()
 
 export {
-    auth
+    fb
 } 

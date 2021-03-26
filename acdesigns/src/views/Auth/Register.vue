@@ -5,10 +5,11 @@
         <v-card class="rounded-0">
           <v-card-title class="justify-center text-h4">Register</v-card-title>
           <v-card-text>
-            <v-form v-on:submit.prevent="onSubmit">
+            <v-form v-on:submit.prevent="onSubmit" ref="form">
               <v-text-field
-                label="Resident Name*"
+                label="Resident Name"
                 v-model="islandRep"
+                :rules="rules.required"
                 tabindex="1"
                 color="dark"
                 dense
@@ -16,8 +17,9 @@
               >
               </v-text-field>
               <v-text-field
-                label="Island Name*"
+                label="Island Name"
                 v-model="islandName"
+                :rules="rules.required"
                 tabindex="2"
                 class="mt-6"
                 color="dark"
@@ -26,8 +28,9 @@
               >
               </v-text-field>
               <v-text-field
-                label="Email*"
+                label="Email"
                 v-model="email"
+                :rules="rules.required"
                 tabindex="3"
                 autocomplete="on"
                 class="mt-6"
@@ -37,8 +40,9 @@
               >
               </v-text-field>
               <v-text-field
-                label="Password*"
+                label="Password"
                 v-model="password"
+                :rules="rules.required"
                 tabindex="4"
                 autocomplete="on"
                 class="mt-6"
@@ -65,7 +69,7 @@
 </template>
 
 <script>
-import * as auth from "../../services/AuthService";
+import * as auth from "../../services/UserService";
 
 export default {
   name: "Register",
@@ -76,25 +80,26 @@ export default {
       islandName: "",
       password: "",
       error: "",
+      rules: {
+        required: [(v) => !!v || "Required"],
+      },
     };
   },
   methods: {
     onSubmit: async function () {
-      const user = {
-        email: this.email,
-        password: this.password,
-        islandRep: this.islandRep,
-        islandName: this.islandName,
-      };
-      if (user.islandRep && user.islandName) {
+      if (this.$refs.form.validate()) {
+        const user = {
+          email: this.email,
+          password: this.password,
+          islandRep: this.islandRep,
+          islandName: this.islandName,
+        };
         try {
           await auth.register(user);
           this.$router.push({ name: "Home" });
         } catch (error) {
           this.error = error;
         }
-      } else {
-        this.error = "Enter all required fields.";
       }
     },
   },

@@ -1,12 +1,13 @@
-import { auth } from './firebase'
+import { fb } from './firebase'
 import store from '../store/index'
 import axios from 'axios'
 
 // Generate the token to be passed and verified by the server
-function generateToken() {
+export function generateToken() {
     return new Promise((resolve, reject) => {
-        auth.currentUser.getIdToken()
+        fb.currentUser.getIdToken()
             .then((token) => {
+                console.log(token)
                 resolve(token)
             }).catch((error) => {
                 reject(error)
@@ -16,14 +17,14 @@ function generateToken() {
 
 // Check with firebase to see if the user is logged in
 export function isLoggedIn() {
-    const user = auth.currentUser
+    const user = fb.currentUser
     return (user ? true : false)
 }
 
 // Login a user using firebase
 export function login(user) {
     return new Promise((resolve, reject) => {
-        auth.signInWithEmailAndPassword(user.email, user.password)
+        fb.signInWithEmailAndPassword(user.email, user.password)
             .then(() => {
                 store.dispatch('authenticate')
                 resolve()
@@ -34,7 +35,7 @@ export function login(user) {
 
 // Logout a user using firebase
 export function logout() {
-    auth.signOut().then(() => {
+    fb.signOut().then(() => {
         store.dispatch('authenticate')
     }).catch((error) => {
         console.log(error)
@@ -45,7 +46,7 @@ export function logout() {
 // user profile in the database
 export function register(user) {
     return new Promise((resolve, reject) => {
-        auth.createUserWithEmailAndPassword(user.email, user.password)
+        fb.createUserWithEmailAndPassword(user.email, user.password)
             .then((userCredential) => {
                 user._id = userCredential.user.uid
                 axios.create({
@@ -70,35 +71,29 @@ export function getUser(id) {
 }
 
 // Update user profile
-// TEMP
-export async function updateUser(formData) {
-    try {
-        const token = await generateToken()
-        return axios.create({
-            baseURL: store.state.apiUrl,
-            headers: { Authorization: token }
-        }).put(`/user`, formData)
-    }
-    catch (error) {
-        return error.response.statusText
-    }
+export async function updateUser(user) {
+    const token = await generateToken()
+    return axios.create({
+        baseURL: store.state.apiUrl,
+        headers: { Authorization: token }
+    }).put(`/user`, user)
 }
 
 // Get the users username from firebase
 export function getUsername() {
-    const user = auth.currentUser
+    const user = fb.currentUser
     return user.displayName
 }
 
 // Get the users email from firebase
 export function getEmail() {
-    const user = auth.currentUser
+    const user = fb.currentUser
     return user.email
 }
 
 // Get the users id from firebase
 export function getUserId() {
-    const user = auth.currentUser
+    const user = fb.currentUser
     return user.uid
 }
 
@@ -106,7 +101,7 @@ export function getUserId() {
 // using firebase
 export async function resetPassword(email) {
     return new Promise((resolve, reject) => {
-        auth.sendPasswordResetEmail(email)
+        fb.sendPasswordResetEmail(email)
             .then(() => resolve())
             .catch((error) => reject(error));
     });

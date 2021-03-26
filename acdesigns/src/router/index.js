@@ -13,7 +13,7 @@ import About from '../views/Profile/About.vue'
 import Design from '../views/Design/Design.vue'
 import DesignCreate from '../views/Design/DesignCreate.vue'
 import DesignEdit from '../views/Design/DesignEdit.vue'
-import * as auth from '../services/AuthService'
+import * as auth from '../services/UserService'
 
 Vue.use(VueRouter)
 

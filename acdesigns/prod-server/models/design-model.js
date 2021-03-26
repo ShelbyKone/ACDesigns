@@ -11,12 +11,12 @@ var _mongoose2 = _interopRequireDefault(_mongoose);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var designSchema = new _mongoose2.default.Schema({
-    userId: { type: _mongoose2.default.Schema.Types.ObjectId, ref: 'User' },
-    creatorCode: String,
+    user: { type: String, ref: 'User' },
     designCode: String,
     image: String,
     title: String,
     description: String,
+    type: String,
     tags: [String],
     likes: Number
 });

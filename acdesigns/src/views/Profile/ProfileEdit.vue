@@ -2,12 +2,11 @@
   <v-container>
     <v-row class="justify-center mt-1">
       <v-col class="col-md-6" align="center">
-        <v-form
-          v-on:submit.prevent="onSubmit"
-        >
+        <v-form v-on:submit.prevent="onSubmit" ref="form">
           <v-text-field
-            label="Email*"
+            label="Email"
             v-model="email"
+            :rules="rules.required"
             color="dark"
             filled
             dense
@@ -15,8 +14,9 @@
           >
           </v-text-field>
           <v-text-field
-            label="Resident Name*"
+            label="Resident Name"
             v-model="user.islandRep"
+            :rules="rules.required"
             color="dark"
             filled
             dense
@@ -24,8 +24,9 @@
           >
           </v-text-field>
           <v-text-field
-            label="Island Name*"
+            label="Island Name"
             v-model="user.islandName"
+            :rules="rules.required"
             color="dark"
             filled
             dense
@@ -75,7 +76,7 @@
 </template>
 
 <script>
-import * as auth from "./../../services/AuthService";
+import * as auth from "../../services/UserService";
 import FormData from "form-data";
 
 export default {
@@ -87,11 +88,14 @@ export default {
       user: {},
       image: null,
       loading: false,
+      rules: {
+        required: [(v) => !!v || "Required"],
+      },
     };
   },
   methods: {
     onSubmit: async function () {
-      if (this.email && this.user.islandRep && this.user.islandName) {
+      if (this.$refs.form.validate()) {
         this.loading = true;
 
         let formData = new FormData();
@@ -112,8 +116,6 @@ export default {
           this.loading = false;
           this.error = error;
         }
-      } else {
-        this.error = "Enter all required fields.";
       }
     },
   },

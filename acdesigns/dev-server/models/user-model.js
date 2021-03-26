@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema({
-    _id: { type: String},
+    _id: String,
     islandRep: String,
     islandName: String,
     creatorCode: String,

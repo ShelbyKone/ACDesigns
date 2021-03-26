@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import * as auth from "./../../services/AuthService";
+import * as auth from "../../services/UserService";
 
 export default {
   name: "Profile",
