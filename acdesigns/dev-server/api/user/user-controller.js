@@ -1,17 +1,14 @@
 import User from '../../models/user-model'
 import aws from '../../config/aws'
-import mongoose from 'mongoose'
 import * as auth from '../../services/auth-service'
 import fs from 'fs'
 
 //create the user in the database 
 export function createUser(req, res) {
-    //check for empty values
+    //check for empty required values
     if (!req.body._id || !req.body.islandRep || !req.body.islandName) {
-        res.statusMessage = 'Include all required fields.'
-        return res.status(400).end() //status: bad request
+        return res.status(400).send('Include all required fields') //status: bad request
     }
-
     //create the user
     const user = new User({
         _id: req.body._id,
@@ -22,17 +19,14 @@ export function createUser(req, res) {
         image: '',
         favorites: []
     })
-
     //save the user to the db
     user.save(error => {
         if (error) {
             if (error.code === 11000) {
-                res.statusMessage = 'A user with this ID already exists.'
-                return res.status(403).end() //status: forbidden
+                return res.status(403).send('A user with this ID already exists') //status: forbidden
             }
             console.log(error)
-            res.statusMessage = "Registration failed."
-            return res.status(500).end() //status: internal server error
+            return res.status(500).send('Server error: registration failed') //status: internal server error
         }
         return res.status(201).json() //status: success, created
     })
@@ -42,12 +36,10 @@ export function createUser(req, res) {
 export function getUser(req, res) {
     User.findOne({ _id: req.params.id }, (error, user) => {
         if (error) {
-            res.statusMessage = "Error retrieving user from database."
-            return res.status(500).end() //status: internal server error
+            return res.status(500).send('Error retrieving user from database') //status: internal server error
         }
         if (!user) {
-            res.statusMessage = `No user with id ${req.params.id} found.`
-            return res.status(404).end() //status: not found
+            return res.status(404).send(`No user with id ${req.params.id} found`) //status: not found
         }
         return res.status(200).json({ user: user }) //status: success
     })
@@ -55,65 +47,64 @@ export function getUser(req, res) {
 
 //update a users profile
 export function updateUser(req, res) {
-    const user = new User(req.body)
+    auth.getUserId(req).then((id) => {
+        //create the user
+        const user = new User(req.body)
 
-    auth.getUserId(req).then((id) => { //get the users id
-        if (id == user._id) { //only allow the user who made the request to update their own profile
-            if (req.file) { //if theres an image, upload it to s3 then update the user
-
-                if (req.file.mimetype != 'image/png' && req.file.mimetype != 'image/jpeg') { //if the file is not an image
+        //only allow the user who made the request to update their own profile
+        if (id != user._id) {
+            return res.status(401).send('You are not authorized to make this request') //status: unauthorized
+        }
+        //check for empty required values
+        if (!req.body._id || !req.body.islandRep || !req.body.islandName) {
+            return res.status(400).send('Include all required fields') //status: bad request
+        }
+        //if theres an image, upload it to s3 then update the user
+        if (req.file) {
+            //only allow image file types
+            if (req.file.mimetype != 'image/png' && req.file.mimetype != 'image/jpeg') {
+                fs.unlinkSync(req.file.path) //empty uploads folder
+                return res.status(422).send('File must be of type .jpeg or .png') //status: Unprocessable Entity
+            }
+            //upload the image to s3
+            const s3 = new aws.S3();
+            var params = {
+                ACL: 'public-read',
+                Bucket: process.env.BUCKET_NAME,
+                Body: fs.createReadStream(req.file.path),
+                Key: `profileImage/${user._id}`,
+                ContentType: req.file.mimetype
+            };
+            s3.upload(params, (err, data) => {
+                if (err) {
                     fs.unlinkSync(req.file.path) //empty uploads folder
-                    res.statusMessage = 'File must be of type .jpeg or .png'
-                    return res.status(422).end() //status: Unprocessable Entity
+                    return res.status(500).send('Error uploading file') //status: internal server error
                 }
-
-                const s3 = new aws.S3();
-
-                var params = {
-                    ACL: 'public-read',
-                    Bucket: process.env.BUCKET_NAME,
-                    Body: fs.createReadStream(req.file.path),
-                    Key: `profileImage/${user._id}`,
-                    ContentType: req.file.mimetype
-                };
-
-                s3.upload(params, (err, data) => {
-                    if (err) {
-                        fs.unlinkSync(req.file.path) //empty uploads folder
-                        res.statusMessage = 'Error uploading file.'
-                        return res.status(500).end() //status: internal server error
-                    }
-                    if (data) {
-                        fs.unlinkSync(req.file.path) //empty uploads folder
-
-                        user.image = data.Location
-                        User.findOneAndUpdate({ _id: user._id }, user, (error) => {
-                            if (error) {
-                                res.statusMessage = 'Server Error'
-                                return res.status(500).end() //status: internal server error
-                            }
-                            return res.status(204).json() //status: success, no content
-                        })
-                    }
-                })
-            }
-            else { //update the user without uploading an image
-                User.findOneAndUpdate({ _id: user._id }, user, (error) => {
-                    if (error) {
-                        res.statusMessage = 'Server Error'
-                        return res.status(500).end() //status: internal server error
-                    }
-                    return res.status(204).json() //status: success, no content
-                })
-            }
+                if (data) {
+                    fs.unlinkSync(req.file.path) //empty uploads folder
+                    //update the user in the db
+                    user.image = data.Location
+                    User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+                        if (error) {
+                            return res.status(500).send('Server error: unable to update user') //status: internal server error
+                        }
+                        return res.status(204).json() //status: success, no content
+                    })
+                }
+            })
         }
-        else { //if the token user id doesn't match the request user id
-            res.statusMessage = 'You are not authorized to make this request.'
-            return res.status(401).end() //status: unauthorized
+        //update the user without uploading an image
+        else {
+            User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+                if (error) {
+                    return res.status(500).send('Server error: unable to update user') //status: internal server error
+                }
+                return res.status(204).json() //status: success, no content
+            })
         }
+
     })
-        .catch((error) => { //if unable to get users id
-            res.statusMessage = 'Unable to get user id'
-            return res.status(500).end() //status: internal server error
+        .catch(() => { //if unable to get users id
+            return res.status(500).send('Unable to get user id') //status: internal server error
         })
 }

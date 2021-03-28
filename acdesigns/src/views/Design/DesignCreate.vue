@@ -37,6 +37,7 @@
             :items="filter"
             label="Design Type"
             :rules="rules.required"
+            color="dark"
             filled
             dense
           ></v-select>
@@ -99,6 +100,9 @@
 </template>
 
 <script>
+import * as ds from "../../services/DesignService";
+import FormData from "form-data";
+
 export default {
   name: "DesignCreate",
   data: function () {
@@ -140,9 +144,23 @@ export default {
     },
     onSubmit: async function () {
       if (this.$refs.form.validate()) {
-        console.log("hi");
-      } else {
-        console.log("not valid");
+        this.loading = true;
+
+        let formData = new FormData();
+        formData.append("title", this.design.title);
+        formData.append("designCode", this.design.designCode);
+        formData.append("description", this.design.description);
+        formData.append("type", this.design.type);
+        formData.append("tags", JSON.stringify(this.design.tags));
+        formData.append("image", this.design.image);
+
+        try {
+          await ds.createDesign(formData);
+          this.$router.push({ name: "Home" });
+        } catch (error) {
+          this.loading = false;
+          this.error = error;
+        }
       }
     },
   },

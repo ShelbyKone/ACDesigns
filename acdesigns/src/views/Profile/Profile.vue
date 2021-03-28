@@ -71,11 +71,15 @@ export default {
     };
   },
   beforeRouteEnter(to, from, next) {
-    auth.getUser(to.params.id).then((res) => {
-      next((vm) => {
-        vm.user = res.data.user;
+    try {
+      auth.getUser(to.params.id).then((res) => {
+        next((vm) => {
+          vm.user = res.data.user;
+        });
       });
-    });
+    } catch (error) {
+      console.log(error); //TODO: create a 'user does not exist' page
+    }
   },
 };
 </script>

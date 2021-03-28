@@ -45,22 +45,85 @@ function getDesign(req, res) {
 
 function getDesigns(req, res) {}
 
-function updateDesign(req, res) {}
+function updateDesign(req, res) {
+    auth.getUserId(req).then(function (userId) {
+        //get the users id
+        //only allow the user who made the request to update their own designs
+        if (userId != req.body.user) {
+            console.log('userID: ' + userId);
+            console.log('req.body.user: ' + req.body.user);
+            return res.status(401).send('You are not authorized to make this request'); //status: unauthorized
+        }
+        //check for empty required values
+        if (!req.body.designCode || !req.body.title || !req.body.description || !req.body.type || !req.body.tags) {
+            if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+            return res.status(400).send('Include all required fields'); //status: bad request
+        }
+        //if theres an image, upload it to s3 then update the design
+        if (req.file) {
+            //only allow image file types
+            if (req.file.mimetype != 'image/png' && req.file.mimetype != 'image/jpeg') {
+                _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                return res.status(422).send('File must be of type .jpeg or .png'); //status: Unprocessable Entity
+            }
+            //create the design
+            var _design = new _designModel2.default(req.body);
+
+            //upload the image to s3
+            var s3 = new _aws2.default.S3();
+            var params = {
+                ACL: 'public-read',
+                Bucket: process.env.BUCKET_NAME,
+                Body: _fs2.default.createReadStream(req.file.path),
+                Key: 'designImage/' + designId,
+                ContentType: req.file.mimetype
+            };
+            s3.upload(params, function (err, data) {
+                if (err) {
+                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                    return res.status(500).send('Error uploading file'); //status: internal server error
+                }
+                if (data) {
+                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                    //save the design to the db
+                    _design.image = data.Location;
+                    _designModel2.default.findOneAndUpdate({ _id: _design._id }, _design, function (error) {
+                        if (error) {
+                            return res.status(500).send('Error creating design'); //status: internal server error
+                        }
+                        return res.status(204).json(); //status: success, no content
+                    });
+                }
+            });
+        }
+        //update the design without uploading a new image
+        else {
+                _designModel2.default.findOneAndUpdate({ _id: design._id }, design, function (error) {
+                    if (error) {
+                        return res.status(500).send('Error creating design'); //status: internal server error
+                    }
+                    return res.status(204).json(); //status: success, no content
+                });
+            }
+    }).catch(function () {
+        //if unable to get users id
+        if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+        return res.status(500).send('Unable to get user id'); //status: internal server error
+    });
+}
 
 function createDesign(req, res) {
     auth.getUserId(req).then(function (userId) {
         //get the users id
-        //check for empty values
+        //check for empty required values
         if (!req.body.designCode || !req.body.title || !req.body.description || !req.body.type || !req.body.tags || !req.file) {
             if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-            res.statusMessage = 'Include all required fields.';
-            return res.status(400).end(); //status: bad request
+            return res.status(400).send('Include all required fields'); //status: bad request
         }
+        //only allow image file types
         if (req.file.mimetype != 'image/png' && req.file.mimetype != 'image/jpeg') {
-            //if the file is not an image
             _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-            res.statusMessage = 'File must be of type .jpeg or .png';
-            return res.status(422).end(); //status: Unprocessable Entity
+            return res.status(422).send('File must be of type .jpeg or .png'); //status: Unprocessable Entity
         }
         //create the design and get its id
         var design = new _designModel2.default({
@@ -87,8 +150,7 @@ function createDesign(req, res) {
         s3.upload(params, function (err, data) {
             if (err) {
                 _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                res.statusMessage = 'Error uploading file.';
-                return res.status(500).end(); //status: internal server error
+                return res.status(500).send('Error uploading file'); //status: internal server error
             }
             if (data) {
                 _fs2.default.unlinkSync(req.file.path); //empty uploads folder
@@ -96,18 +158,17 @@ function createDesign(req, res) {
                 design.image = data.Location;
                 design.save(function (error) {
                     if (error) {
-                        console.log(error);
-                        res.statusMessage = "Error creating design.";
-                        return res.status(500).end(); //status: internal server error
+                        return res.status(500).send('Error creating design'); //status: internal server error
                     }
-                    return res.status(201).json(); //status: success, created
+                    return res.status(201).send(); //status: success, created
                 });
             }
         });
-    }).catch(function () {
+    }).catch(function (error) {
         //if unable to get users id
-        res.statusMessage = 'Unable to get user id.';
-        return res.status(500).end(); //status: internal server error
+        if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+        console.log(error);
+        return res.status(500).send('Unable to get user id'); //status: internal server error
     });
 }
 

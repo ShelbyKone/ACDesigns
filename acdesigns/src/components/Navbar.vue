@@ -65,17 +65,38 @@
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'About', params: {id: this.$store.state.userId} }" text block exact>
+            <v-btn
+              :to="{ name: 'About', params: { id: this.$store.state.userId } }"
+              text
+              block
+              exact
+            >
               <span>Profile</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'Designs', params: {id: this.$store.state.userId} }" text block exact>
+            <v-btn
+              :to="{
+                name: 'Designs',
+                params: { id: this.$store.state.userId },
+              }"
+              text
+              block
+              exact
+            >
               <span>My Designs</span>
             </v-btn>
           </v-list-item>
           <v-list-item v-if="$store.state.isLoggedIn">
-            <v-btn :to="{name: 'Favorites', params: {id: this.$store.state.userId} }" text block exact>
+            <v-btn
+              :to="{
+                name: 'Favorites',
+                params: { id: this.$store.state.userId },
+              }"
+              text
+              block
+              exact
+            >
               <span>My Favorites</span>
             </v-btn>
           </v-list-item>
@@ -99,9 +120,13 @@ export default {
     return {};
   },
   methods: {
-    logout: async function () {
-      await auth.logout();
-      this.$router.push({ name: "Home" }).catch(() => {});
+    logout() {
+      try {
+        auth.logout();
+        this.$router.push({ name: "Home" }).catch(() => {});
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

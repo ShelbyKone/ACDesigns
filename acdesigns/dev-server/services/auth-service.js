@@ -7,7 +7,7 @@ export function requireLogin(req, res, next) {
             next()
         })
         .catch(() => {
-            return res.status(401).json({ message: 'You must be logged in' })
+            return res.status(401).send('You must be logged in')
         })
 }
 

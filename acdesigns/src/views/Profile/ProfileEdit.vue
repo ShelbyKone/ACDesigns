@@ -120,7 +120,7 @@ export default {
     },
   },
   beforeRouteEnter(to, from, next) {
-    auth.getUser(to.params.id).then((res) => {
+    auth.getUser(to.params.id).then((res) => { //TODO: redirect if not correct user
       next((vm) => {
         vm.user = res.data.user;
         vm.email = auth.getEmail();
