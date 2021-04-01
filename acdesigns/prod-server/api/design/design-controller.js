@@ -32,12 +32,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function getDesign(req, res) {
     _designModel2.default.findOne({ _id: req.params.id }, function (error, design) {
         if (error) {
-            res.statusMessage = "Error retrieving design from database.";
-            return res.status(500).end(); //status: internal server error
+            return res.status(500).send('Error retrieving design from database.'); //status: internal server error
         }
         if (!design) {
             res.statusMessage = 'No design with id ' + req.params.id + ' found.';
-            return res.status(404).end(); //status: not found
+            return res.status(404).send('No design with id ' + req.params.id + ' found'); //status: not found
         }
         return res.status(200).json({ design: design }); //status: success
     }).populate('user');
@@ -50,8 +49,6 @@ function updateDesign(req, res) {
         //get the users id
         //only allow the user who made the request to update their own designs
         if (userId != req.body.user) {
-            console.log('userID: ' + userId);
-            console.log('req.body.user: ' + req.body.user);
             return res.status(401).send('You are not authorized to make this request'); //status: unauthorized
         }
         //check for empty required values
@@ -59,6 +56,11 @@ function updateDesign(req, res) {
             if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
             return res.status(400).send('Include all required fields'); //status: bad request
         }
+
+        //create the design
+        var design = new _designModel2.default(req.body);
+        design.tags = JSON.parse(design.tags);
+
         //if theres an image, upload it to s3 then update the design
         if (req.file) {
             //only allow image file types
@@ -66,8 +68,6 @@ function updateDesign(req, res) {
                 _fs2.default.unlinkSync(req.file.path); //empty uploads folder
                 return res.status(422).send('File must be of type .jpeg or .png'); //status: Unprocessable Entity
             }
-            //create the design
-            var _design = new _designModel2.default(req.body);
 
             //upload the image to s3
             var s3 = new _aws2.default.S3();
@@ -75,7 +75,7 @@ function updateDesign(req, res) {
                 ACL: 'public-read',
                 Bucket: process.env.BUCKET_NAME,
                 Body: _fs2.default.createReadStream(req.file.path),
-                Key: 'designImage/' + designId,
+                Key: 'designImage/' + design._id,
                 ContentType: req.file.mimetype
             };
             s3.upload(params, function (err, data) {
@@ -86,12 +86,12 @@ function updateDesign(req, res) {
                 if (data) {
                     _fs2.default.unlinkSync(req.file.path); //empty uploads folder
                     //save the design to the db
-                    _design.image = data.Location;
-                    _designModel2.default.findOneAndUpdate({ _id: _design._id }, _design, function (error) {
+                    design.image = data.Location;
+                    _designModel2.default.findOneAndUpdate({ _id: design._id }, design, function (error) {
                         if (error) {
                             return res.status(500).send('Error creating design'); //status: internal server error
                         }
-                        return res.status(204).json(); //status: success, no content
+                        return res.status(204).send(); //status: success, no content
                     });
                 }
             });
@@ -102,13 +102,13 @@ function updateDesign(req, res) {
                     if (error) {
                         return res.status(500).send('Error creating design'); //status: internal server error
                     }
-                    return res.status(204).json(); //status: success, no content
+                    return res.status(204).send(); //status: success, no content
                 });
             }
     }).catch(function () {
         //if unable to get users id
         if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-        return res.status(500).send('Unable to get user id'); //status: internal server error
+        return res.status(500).send('Error creating design'); //status: internal server error
     });
 }
 
@@ -160,16 +160,39 @@ function createDesign(req, res) {
                     if (error) {
                         return res.status(500).send('Error creating design'); //status: internal server error
                     }
-                    return res.status(201).send(); //status: success, created
+                    return res.status(201).json({ id: designId }); //status: success, created
                 });
             }
         });
-    }).catch(function (error) {
+    }).catch(function () {
         //if unable to get users id
         if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-        console.log(error);
-        return res.status(500).send('Unable to get user id'); //status: internal server error
+        return res.status(500).send('Error creating design'); //status: internal server error
     });
 }
 
-function deleteDesign(req, res) {}
+function deleteDesign(req, res) {
+    _designModel2.default.deleteOne({ _id: req.params.id }, function (error) {
+        if (error) {
+            return res.status(500).send('Error deleting design'); //status: internal server error
+        }
+        //delete the image
+        var s3 = new _aws2.default.S3();
+        var params = {
+            Bucket: process.env.BUCKET_NAME,
+            Delete: {
+                Objects: [{
+                    Key: 'designImage/' + req.params.id
+                }]
+            }
+        };
+        s3.deleteObjects(params, function (err, data) {
+            if (err) {
+                return res.status(500).send('Error deleting design image'); //status: internal server error
+            }
+            if (data) {
+                return res.status(200).send();
+            }
+        });
+    });
+}

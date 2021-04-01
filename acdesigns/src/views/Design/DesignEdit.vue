@@ -46,7 +46,7 @@
             label="Tags"
             color="dark"
             :rules="rules.tags"
-            hint="Enter between 3 and 7 tags"
+            hint="Enter between 3 and 6 tags"
             append-icon=""
             multiple
             chips
@@ -115,11 +115,11 @@ export default {
         required: [(v) => !!v || "Required"],
         tags: [
           (v) => {
-            if (!v || v.length < 3 || v.length > 7)
-              return "Enter between 3 and 7 tags";
-            if (v.length >= 3 || v.length <= 7) {
+            if (!v || v.length < 3 || v.length > 6)
+              return "Enter between 3 and 6 tags";
+            if (v.length >= 3 || v.length <= 6) {
               for (const item of v) {
-                if (item.length > 15)
+                if (item.length > 14)
                   return "All tags must be less than 15 characters";
               }
             }
@@ -139,6 +139,7 @@ export default {
         this.loading = true;
 
         let formData = new FormData();
+        formData.append("_id", this.design._id)
         formData.append("user", this.design.user._id)
         formData.append("title", this.design.title);
         formData.append("designCode", this.design.designCode);

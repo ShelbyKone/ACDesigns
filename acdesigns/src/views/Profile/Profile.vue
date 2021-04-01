@@ -28,10 +28,10 @@
         >
           <router-link
             :to="{ name: 'ProfileEdit', params: { id: $route.params.id } }"
-            class="mr-6"
+            class="mr-6 no-underline"
             >Update Profile</router-link
           >
-          <router-link to="/reset-password" class="ml-6"
+          <router-link to="/reset-password" class="ml-6 no-underline"
             >Change Password</router-link
           >
         </v-row>

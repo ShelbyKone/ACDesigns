@@ -27,7 +27,7 @@ export async function createDesign(design) {
             baseURL: store.state.apiUrl,
             headers: { Authorization: token }
         }).post(`/design`, design)
-            .then(() => resolve())
+            .then(res => resolve(res))
             .catch(error => reject(error.response.data))
     })
 }
@@ -47,6 +47,15 @@ export async function updateDesign(design) {
 }
 
 // Delete a design
-export function deleteDesign() {
+export async function deleteDesign(id) {
+    const token = await auth.generateToken()
 
+    return new Promise((resolve, reject) => {
+        return axios.create({
+            baseURL: store.state.apiUrl,
+            headers: { Authorization: token }
+        }).delete(`/design/${id}`)
+            .then(() => resolve())
+            .catch(error => reject(error.response.data))
+    })
 }
