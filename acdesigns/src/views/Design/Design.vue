@@ -5,7 +5,7 @@
         class="col-md-8 col-lg-6 col-xl-4"
         :align="this.$vuetify.breakpoint.mdAndUp ? 'left' : 'center'"
       >
-        <v-card width="500" min-height="453" class="rounded-0">
+        <v-card width="500" min-height="453">
           <v-card-title class="justify-center">{{ design.title }}</v-card-title>
           <v-card-subtitle class="pb-2 text-center">{{
             design.designCode
@@ -44,7 +44,7 @@
           :to="{ name: 'About', params: { id: user._id } }"
           class="no-underline"
         >
-          <v-card max-width="250" class="rounded-0" align="center">
+          <v-card max-width="250" align="center">
             <v-card-text class="pt-6 pb-1">
               <v-img
                 :src="
@@ -78,7 +78,7 @@
             </v-card-text>
           </v-card>
         </router-link>
-        <v-card max-width="250" class="rounded-0 mt-10" align="center">
+        <v-card max-width="250" class="mt-10" align="center">
           <v-row>
             <v-col class="py-0 my-0">
               <v-card-text class="mt-2">
@@ -91,7 +91,7 @@
                       dark
                       fab
                     >
-                      <v-icon dark> mdi-heart </v-icon>
+                      <v-icon dark large> mdi-heart </v-icon>
                     </v-btn>
                   </template>
                   <span>Favorite</span>
@@ -114,7 +114,7 @@
     </v-row>
     <v-row class="justify-center">
       <v-col class="col-md-12 col-lg-9 col-xl-6" align="center">
-        <v-card class="rounded-0 mt-2" align="center">
+        <v-card class="mt-2" align="center">
           <v-card-text class="black--text">{{
             design.description
           }}</v-card-text>

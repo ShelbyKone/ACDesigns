@@ -6,21 +6,19 @@
           <v-text-field
             v-model="design.title"
             label="Title"
-            :rules="rules.required"
+            :rules="rules.title.concat(rules.required)"
             color="dark"
             filled
             dense
-            clearable
           >
           </v-text-field>
           <v-text-field
             v-model="design.designCode"
             label="Design Code"
-            :rules="rules.required"
+            :rules="rules.designCode"
             color="dark"
             filled
             dense
-            clearable
           >
           </v-text-field>
           <v-textarea
@@ -121,6 +119,14 @@ export default {
       filter: ["Shirt", "Dress", "Hat", "Path", "Misc"],
       rules: {
         required: [(v) => !!v || "Required"],
+        title: [
+          (v) => v.length < 30 || "Title must be less than 30 characters",
+        ],
+        designCode: [
+          (v) =>
+            v.length == 17 ||
+            "Design code must follow format MO-1234-1234-1234",
+        ],
         tags: [
           (v) => {
             if (!v || v.length < 3 || v.length > 6)

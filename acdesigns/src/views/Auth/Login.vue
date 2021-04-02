@@ -2,7 +2,7 @@
   <v-container>
     <v-row class="justify-center mt-12">
       <v-col class="col-xl-4 col-lg-6 col-md-8 col-sm-10" align="center">
-        <v-card class="rounded-0">
+        <v-card>
           <v-card-title class="justify-center text-h4">Login</v-card-title>
           <v-card-text>
             <v-form v-on:submit.prevent="onSubmit" ref="form">
@@ -11,9 +11,7 @@
                 v-model="email"
                 :rules="rules.required"
                 autocomplete="on"
-                tabindex="1"
                 color="dark"
-                clearable
                 dense
               >
               </v-text-field>
@@ -22,11 +20,9 @@
                 v-model="password"
                 :rules="rules.required"
                 autocomplete="on"
-                tabindex="2"
                 color="dark"
                 type="password"
                 class="mt-6"
-                clearable
                 dense
               >
               </v-text-field>

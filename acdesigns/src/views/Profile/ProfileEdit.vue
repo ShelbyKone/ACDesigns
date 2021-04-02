@@ -20,7 +20,6 @@
             color="dark"
             filled
             dense
-            clearable
           >
           </v-text-field>
           <v-text-field
@@ -30,7 +29,6 @@
             color="dark"
             filled
             dense
-            clearable
           >
           </v-text-field>
           <v-text-field
@@ -39,7 +37,7 @@
             color="dark"
             filled
             dense
-            clearable
+            hint="Example: MA-1234-1234-1234"
           >
           </v-text-field>
           <v-textarea
