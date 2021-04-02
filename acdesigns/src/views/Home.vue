@@ -26,12 +26,9 @@
         </v-row>
         <v-row class="mx-auto" justify="center">
           <DesignCard
-            v-for="n in 8"
-            v-bind:key="n"
-            :title="title"
-            :imageURL="imageURL"
-            :designId="designId"
-            :tags="tags"
+            v-for="design in designs"
+            v-bind:key="design._id"
+            :design="design"
             class="ma-3"
           />
         </v-row>
@@ -51,30 +48,27 @@
 
 <script>
 import DesignCard from "@/components/DesignCard";
+import * as ds from "../services/DesignService";
 
 export default {
   name: "Home",
   data: function () {
     return {
-      title: "Flower Dress",
-      imageURL:
-        "https://i.pinimg.com/originals/bf/61/74/bf61742604dafed27f29956362eb7bc7.jpg",
-      designId: "1234-1234-1234",
-      tags: [
-        "dress",
-        "beige",
-        "floral",
-        "flowers",
-        "modern inspiration",
-        "belt",
-        "animal crossing",
-        "tan",
-        "tulips",
-        "summer",
-      ],
+      designs: [],
       sort: ["Popular this week", "Popular this month", "New"],
       filter: ["All", "Shirts", "Dresses", "Hats", "Paths", "Misc"],
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    try {
+      ds.getDesigns().then((res) => {
+        next((vm) => {
+          vm.designs = res.data.designs;
+        });
+      });
+    } catch (error) {
+      console.log(error); //TODO: create a 'design does not exist' page
+    }
   },
   components: {
     DesignCard,

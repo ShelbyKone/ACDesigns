@@ -15,7 +15,13 @@ export function getDesign(id) {
 
 // Get multiple designs by querystring
 export function getDesigns() {
-
+    return new Promise((resolve, reject) => {
+        axios.create({
+            baseURL: store.state.apiUrl,
+        }).get(`/designs`)
+            .then(res => resolve(res))
+            .catch(error => reject(error.response.data))
+    })
 }
 
 // Create a design

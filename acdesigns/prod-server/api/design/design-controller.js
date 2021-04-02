@@ -42,7 +42,14 @@ function getDesign(req, res) {
     }).populate('user');
 }
 
-function getDesigns(req, res) {}
+function getDesigns(req, res) {
+    _designModel2.default.find({}, function (error, designs) {
+        if (error) {
+            return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
+        }
+        return res.status(200).json({ designs: designs });
+    }).populate('user');
+}
 
 function updateDesign(req, res) {
     auth.getUserId(req).then(function (userId) {

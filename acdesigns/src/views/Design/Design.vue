@@ -5,7 +5,7 @@
         class="col-md-8 col-lg-6 col-xl-4"
         :align="this.$vuetify.breakpoint.mdAndUp ? 'left' : 'center'"
       >
-        <v-card max-width="500" min-height="453" class="rounded-0">
+        <v-card width="500" min-height="453" class="rounded-0">
           <v-card-title class="justify-center">{{ design.title }}</v-card-title>
           <v-card-subtitle class="pb-2 text-center">{{
             design.designCode
