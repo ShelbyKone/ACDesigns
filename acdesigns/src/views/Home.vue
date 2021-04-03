@@ -67,7 +67,7 @@ export default {
         });
       });
     } catch (error) {
-      console.log(error); //TODO: create a 'design does not exist' page
+      console.log(error);
     }
   },
   components: {

@@ -87,14 +87,15 @@
                     <v-btn
                       color="secondary"
                       class="elevation-3"
+                      @click="toggleFavorite"
                       v-on="on"
                       dark
                       fab
                     >
-                      <v-icon dark large> mdi-heart </v-icon>
+                      <v-icon dark large> {{ icon }} </v-icon>
                     </v-btn>
                   </template>
-                  <span>Favorite</span>
+                  <span>{{ tooltip }}</span>
                 </v-tooltip>
               </v-card-text>
             </v-col>
@@ -146,6 +147,8 @@
 
 <script>
 import * as ds from "../../services/DesignService";
+import * as fs from "../../services/FavoritesService";
+import * as auth from "../../services/UserService";
 
 export default {
   name: "Design",
@@ -155,6 +158,22 @@ export default {
       user: {},
     };
   },
+  computed: {
+    icon() {
+      if (this.$store.state.isLoggedIn)
+        return this.$store.state.user.favorites.includes(this.design._id)
+          ? "mdi-close"
+          : "mdi-heart";
+      else return "mdi-heart";
+    },
+    tooltip() {
+      if (this.$store.state.isLoggedIn)
+        return this.$store.state.user.favorites.includes(this.design._id)
+          ? "Unfavorite"
+          : "Favorite";
+      else return "Favorite";
+    },
+  },
   methods: {
     deleteDesign: async function () {
       try {
@@ -162,6 +181,32 @@ export default {
         this.$router.push({ name: "Home" });
       } catch (error) {
         console.log(error);
+      }
+    },
+    toggleFavorite: async function () {
+      if (this.$store.state.isLoggedIn) {
+        if (this.$store.state.user.favorites.includes(this.design._id)) {
+          try {
+            await fs.deleteFavorite(this.design._id);
+            const index = this.$store.state.user.favorites.indexOf(
+              this.design._id
+            );
+            this.$store.state.user.favorites.splice(index, 1);
+            this.design.likes--;
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          try {
+            await fs.addFavorite(this.design._id);
+            this.$store.state.user.favorites.push(this.design._id);
+            this.design.likes++;
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      } else {
+        this.$router.push({ name: "Login" });
       }
     },
   },

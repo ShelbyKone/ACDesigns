@@ -4,16 +4,6 @@
       <v-col class="col-md-6" align="center">
         <v-form v-on:submit.prevent="onSubmit" ref="form">
           <v-text-field
-            label="Email"
-            v-model="email"
-            :rules="rules.required"
-            color="dark"
-            filled
-            dense
-            disabled
-          >
-          </v-text-field>
-          <v-text-field
             label="Resident Name"
             v-model="user.islandRep"
             :rules="rules.required"
@@ -82,14 +72,17 @@ export default {
   data: function () {
     return {
       error: "",
-      email: "",
-      user: {},
       image: null,
       loading: false,
       rules: {
         required: [(v) => !!v || "Required"],
       },
     };
+  },
+    computed: {
+    user() {
+      return this.$store.state.user
+    }
   },
   methods: {
     onSubmit: async function () {
@@ -109,6 +102,7 @@ export default {
 
         try {
           await auth.updateUser(formData);
+          this.$store.dispatch('authenticate')
           this.$router.push({ name: "About", params: { id: this.user._id } });
         } catch (error) {
           this.loading = false;
@@ -117,13 +111,12 @@ export default {
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
-    auth.getUser(to.params.id).then((res) => { //TODO: redirect if not correct user
-      next((vm) => {
-        vm.user = res.data.user;
-        vm.email = auth.getEmail();
-      });
-    });
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   auth.getUser(to.params.id).then((res) => { //TODO: redirect if not correct user
+  //     next((vm) => {
+  //       vm.user = res.data.user;
+  //     });
+  //   });
+  // },
 };
 </script>

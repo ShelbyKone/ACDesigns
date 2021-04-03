@@ -74,7 +74,7 @@ export default {
           await auth.login(user);
           this.$router.push({ name: "Home" });
         } catch (error) {
-          this.error = error.message;
+          this.error = error;
         }
       }
     },

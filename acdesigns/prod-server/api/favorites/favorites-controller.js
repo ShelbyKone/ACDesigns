@@ -11,16 +11,38 @@ var _userModel = require('../../models/user-model');
 
 var _userModel2 = _interopRequireDefault(_userModel);
 
-var _authService = require('../../services/auth-service');
+var _designModel = require('../../models/design-model');
 
-var auth = _interopRequireWildcard(_authService);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _designModel2 = _interopRequireDefault(_designModel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getFavorites(req, res) {}
 
-function addFavorite(req, res) {}
+function addFavorite(req, res) {
+    _userModel2.default.updateOne({ _id: req.params.userId }, { $addToSet: { favorites: req.params.designId } }, function (error) {
+        if (error) {
+            return res.status(500).send('Error adding design to favorites'); //status: internal server error
+        }
+        _designModel2.default.updateOne({ _id: req.params.designId }, { $inc: { likes: 1 } }, function (error) {
+            if (error) {
+                return res.status(500).send('Error adding design to favorites'); //status: internal server error
+            }
+            return res.status(204).send(); //status: success, no content
+        });
+    });
+}
 
-function deleteFavorite(req, res) {}
+function deleteFavorite(req, res) {
+    _userModel2.default.updateOne({ _id: req.params.userId }, { $pull: { favorites: req.params.designId } }, function (error) {
+        if (error) {
+            return res.status(500).send('Error removing design from favorites'); //status: internal server error
+        }
+        _designModel2.default.updateOne({ _id: req.params.designId }, { $inc: { likes: -1 } }, function (error) {
+            if (error) {
+                return res.status(500).send('Error adding design to favorites'); //status: internal server error
+            }
+            return res.status(204).send(); //status: success, no content
+        });
+    });
+}

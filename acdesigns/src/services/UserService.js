@@ -18,10 +18,7 @@ export function isLoggedIn() {
 export function login(user) {
     return new Promise((resolve, reject) => {
         fb.signInWithEmailAndPassword(user.email, user.password)
-            .then(() => {
-                store.dispatch('authenticate')
-                resolve()
-            })
+            .then(() => resolve())
             .catch((error) => reject(error.message));
     });
 }
@@ -82,12 +79,6 @@ export async function updateUser(user) {
             .then(() => resolve())
             .catch(error => reject(error.response.data))
     })
-}
-
-// Get the users username from firebase
-export function getUsername() {
-    const user = fb.currentUser
-    return user.displayName
 }
 
 // Get the users email from firebase

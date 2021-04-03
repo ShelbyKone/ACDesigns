@@ -7,8 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     isLoggedIn: false,
-    username: null,
     userId: null,
+    user: {},
     apiUrl: `${window.location.protocol}//${window.location.hostname}:3000/api`
   },
   mutations: {
@@ -16,11 +16,13 @@ export default new Vuex.Store({
       state.isLoggedIn = auth.isLoggedIn()
       if (state.isLoggedIn) {
         state.userId = auth.getUserId()
-        state.username = auth.getUsername()
+        auth.getUser(state.userId).then((res) => {
+          state.user = res.data.user
+        });
       }
       else {
         state.userId = null
-        state.username = null
+        state.user = {}
       }
     }
   },
