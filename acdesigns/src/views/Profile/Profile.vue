@@ -65,26 +65,21 @@ import * as auth from "../../services/UserService";
 
 export default {
   name: "Profile",
-  // data: function () {
-  //   return {
-  //     user: {},
-  //   };
-  // },
-  computed: {
-    user() {
-      return this.$store.state.user
+  data: function () {
+    return {
+      user: {},
+    };
+  },
+  beforeRouteEnter(to, from, next) {
+    try {
+      auth.getUser(to.params.id).then((res) => {
+        next((vm) => {
+          vm.user = res.data.user;
+        });
+      });
+    } catch (error) {
+      console.log(error); //TODO: create a 'user does not exist' page
     }
   },
-  // beforeRouteEnter(to, from, next) {
-  //   try {
-  //     auth.getUser(to.params.id).then((res) => {
-  //       next((vm) => {
-  //         vm.user = res.data.user;
-  //       });
-  //     });
-  //   } catch (error) {
-  //     console.log(error); //TODO: create a 'user does not exist' page
-  //   }
-  // },
 };
 </script>

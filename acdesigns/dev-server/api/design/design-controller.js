@@ -113,7 +113,7 @@ export function createDesign(req, res) {
             description: req.body.description,
             type: req.body.type,
             tags: JSON.parse(req.body.tags),
-            likes: 0,
+            likes: [],
         })
         const designId = design._id
 

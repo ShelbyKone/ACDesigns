@@ -8,7 +8,7 @@ const designSchema = new mongoose.Schema({
     description: String,
     type: String,
     tags: [String],
-    likes: Number,
+    likes: [String],
 })
 
 export default mongoose.model('Design', designSchema)

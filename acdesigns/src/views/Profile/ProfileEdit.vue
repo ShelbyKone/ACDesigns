@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row class="justify-center mt-1">
-      <v-col class="col-md-6" align="center">
+      <v-col class="col-md-10 col-lg-8 col-xl-6" align="center">
         <v-form v-on:submit.prevent="onSubmit" ref="form">
           <v-text-field
             label="Resident Name"
@@ -49,7 +49,7 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3" color="dark" dark>Update</v-btn>
+            <v-btn type="submit" class="mt-3 mb-2" color="dark" dark>Update</v-btn>
             <v-progress-circular
               v-if="loading"
               class="mt-3 ml-3"
@@ -69,6 +69,7 @@ import FormData from "form-data";
 
 export default {
   name: "ProfileEdit",
+  props: ["user"],
   data: function () {
     return {
       error: "",
@@ -78,11 +79,6 @@ export default {
         required: [(v) => !!v || "Required"],
       },
     };
-  },
-    computed: {
-    user() {
-      return this.$store.state.user
-    }
   },
   methods: {
     onSubmit: async function () {
@@ -111,12 +107,5 @@ export default {
       }
     },
   },
-  // beforeRouteEnter(to, from, next) {
-  //   auth.getUser(to.params.id).then((res) => { //TODO: redirect if not correct user
-  //     next((vm) => {
-  //       vm.user = res.data.user;
-  //     });
-  //   });
-  // },
 };
 </script>

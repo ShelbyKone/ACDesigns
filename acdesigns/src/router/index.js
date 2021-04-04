@@ -76,20 +76,21 @@ const routes = [
         path: 'designs',
         name: 'Designs',
         component: Designs
+      },
+      {
+        path: 'edit',
+        name: 'ProfileEdit',
+        component: ProfileEdit,
+        beforeEnter: (to, from, next) => {
+          if (auth.isLoggedIn() && to.params.id == auth.getUserId()) {
+            console.log(to.params.id)
+            next()
+          } else {
+            next('/login')
+          }
+        }
       }
     ]
-  },
-  {
-    path: '/profile-edit/:id',
-    name: 'ProfileEdit',
-    component: ProfileEdit,
-    beforeEnter: (to, from, next) => {
-      if (auth.isLoggedIn()) {
-        next()
-      } else {
-        next('/login')
-      }
-    }
   },
   {
     path: '/design/:id',

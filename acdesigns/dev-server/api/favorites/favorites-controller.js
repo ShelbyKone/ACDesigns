@@ -2,7 +2,12 @@ import User from '../../models/user-model'
 import Design from '../../models/design-model'
 
 export function getFavorites(req, res) {
-    
+    User.find({_id: req.params.userId}, 'favorites', (error, designs) => {
+        if (error) {
+            return res.status(500).send('Error getting users favorites') //status: internal server error
+        }
+        return res.status(200).json({designs: designs})
+    }).populate('favorites')
 }
 
 export function addFavorite(req, res) {

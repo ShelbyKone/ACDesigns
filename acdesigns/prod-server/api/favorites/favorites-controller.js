@@ -17,7 +17,14 @@ var _designModel2 = _interopRequireDefault(_designModel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function getFavorites(req, res) {}
+function getFavorites(req, res) {
+    _userModel2.default.find({ _id: req.params.userId }, 'favorites', function (error, designs) {
+        if (error) {
+            return res.status(500).send('Error getting users favorites'); //status: internal server error
+        }
+        return res.status(200).json({ designs: designs });
+    }).populate('favorites');
+}
 
 function addFavorite(req, res) {
     _userModel2.default.updateOne({ _id: req.params.userId }, { $addToSet: { favorites: req.params.designId } }, function (error) {

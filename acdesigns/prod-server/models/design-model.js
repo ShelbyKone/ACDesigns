@@ -18,7 +18,7 @@ var designSchema = new _mongoose2.default.Schema({
     description: String,
     type: String,
     tags: [String],
-    likes: Number
+    likes: [String]
 });
 
 exports.default = _mongoose2.default.model('Design', designSchema);
