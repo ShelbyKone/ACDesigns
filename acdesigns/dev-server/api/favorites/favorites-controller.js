@@ -2,11 +2,11 @@ import User from '../../models/user-model'
 import Design from '../../models/design-model'
 
 export function getFavorites(req, res) {
-    User.find({_id: req.params.userId}, 'favorites', (error, designs) => {
+    User.findOne({ _id: req.params.userId }, 'favorites', (error, user) => {
         if (error) {
             return res.status(500).send('Error getting users favorites') //status: internal server error
         }
-        return res.status(200).json({designs: designs})
+        return res.status(200).json({ user: user })
     }).populate('favorites')
 }
 
@@ -15,7 +15,7 @@ export function addFavorite(req, res) {
         if (error) {
             return res.status(500).send('Error adding design to favorites') //status: internal server error
         }
-        Design.updateOne({ _id: req.params.designId }, { $inc: { likes: 1 } }, (error) => {
+        Design.updateOne({ _id: req.params.designId }, { $addToSet: { likes: req.params.userId } }, (error) => {
             if (error) {
                 return res.status(500).send('Error adding design to favorites') //status: internal server error
             }
@@ -29,7 +29,7 @@ export function deleteFavorite(req, res) {
         if (error) {
             return res.status(500).send('Error removing design from favorites') //status: internal server error
         }
-        Design.updateOne({ _id: req.params.designId }, { $inc: { likes: -1 } }, (error) => {
+        Design.updateOne({ _id: req.params.designId }, { $pull: { likes: req.params.userId } }, (error) => {
             if (error) {
                 return res.status(500).send('Error adding design to favorites') //status: internal server error
             }

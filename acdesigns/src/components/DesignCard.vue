@@ -30,8 +30,8 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn @click="toggleFavorite" v-on="on">
-              <span>{{ design.likes }} Favorites</span>
-              <v-icon color="secondary">{{ icon }}</v-icon>
+              <span>{{ likes }} Favorites</span>
+              <v-icon :color="iconColor">mdi-heart</v-icon>
             </v-btn>
           </template>
           <span>{{ tooltip }}</span>
@@ -63,40 +63,43 @@ export default {
     return {};
   },
   computed: {
-    icon() {
-      if (this.$store.state.isLoggedIn)
-        return this.$store.state.user.favorites.includes(this.design._id)
-          ? "mdi-close-circle"
-          : "mdi-heart";
-      else return "mdi-heart";
+    iconColor() {
+      if (this.design.likes) {
+        if (this.$store.state.isLoggedIn)
+          return this.design.likes.includes(this.$store.state.userId)
+            ? "secondary"
+            : "grey lighten-1";
+        else return "grey lighten-1";
+      } else return "grey lighten-1";
     },
     tooltip() {
-      if (this.$store.state.isLoggedIn)
-        return this.$store.state.user.favorites.includes(this.design._id)
-          ? "Unfavorite"
-          : "Favorite";
-      else return "Favorite";
+      if (this.design.likes) {
+        if (this.$store.state.isLoggedIn)
+          return this.design.likes.includes(this.$store.state.userId)
+            ? "Unfavorite"
+            : "Favorite";
+        else return "Favorite";
+      } else return "Favorite";
+    },
+    likes() {
+      return this.design.likes ? this.design.likes.length : 0;
     },
   },
   methods: {
     toggleFavorite: async function () {
       if (this.$store.state.isLoggedIn) {
-        if (this.$store.state.user.favorites.includes(this.design._id)) {
+        if (this.design.likes.includes(this.$store.state.userId)) {
           try {
             await fs.deleteFavorite(this.design._id);
-            const index = this.$store.state.user.favorites.indexOf(
-              this.design._id
-            );
-            this.$store.state.user.favorites.splice(index, 1);
-            this.design.likes--;
+            const index = this.design.likes.indexOf(this.$store.state.userId);
+            this.design.likes.splice(index, 1);
           } catch (error) {
             console.log(error);
           }
         } else {
           try {
             await fs.addFavorite(this.design._id);
-            this.$store.state.user.favorites.push(this.design._id);
-            this.design.likes++;
+            this.design.likes.push(this.$store.state.userId);
           } catch (error) {
             console.log(error);
           }

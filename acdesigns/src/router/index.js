@@ -83,7 +83,6 @@ const routes = [
         component: ProfileEdit,
         beforeEnter: (to, from, next) => {
           if (auth.isLoggedIn() && to.params.id == auth.getUserId()) {
-            console.log(to.params.id)
             next()
           } else {
             next('/login')

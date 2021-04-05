@@ -13,6 +13,17 @@ export function getDesign(id) {
     })
 }
 
+// Get all designs by a specific user
+export function getUserDesigns(id) {
+    return new Promise((resolve, reject) => {
+        axios.create({
+            baseURL: store.state.apiUrl,
+        }).get(`/user/${id}/designs`)
+            .then(res => resolve(res))
+            .catch(error => reject(error.response.data))
+    })
+}
+
 // Get multiple designs by querystring
 export function getDesigns() {
     return new Promise((resolve, reject) => {

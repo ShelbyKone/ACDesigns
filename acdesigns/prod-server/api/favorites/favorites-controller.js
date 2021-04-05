@@ -18,11 +18,11 @@ var _designModel2 = _interopRequireDefault(_designModel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getFavorites(req, res) {
-    _userModel2.default.find({ _id: req.params.userId }, 'favorites', function (error, designs) {
+    _userModel2.default.findOne({ _id: req.params.userId }, 'favorites', function (error, user) {
         if (error) {
             return res.status(500).send('Error getting users favorites'); //status: internal server error
         }
-        return res.status(200).json({ designs: designs });
+        return res.status(200).json({ user: user });
     }).populate('favorites');
 }
 
@@ -31,7 +31,7 @@ function addFavorite(req, res) {
         if (error) {
             return res.status(500).send('Error adding design to favorites'); //status: internal server error
         }
-        _designModel2.default.updateOne({ _id: req.params.designId }, { $inc: { likes: 1 } }, function (error) {
+        _designModel2.default.updateOne({ _id: req.params.designId }, { $addToSet: { likes: req.params.userId } }, function (error) {
             if (error) {
                 return res.status(500).send('Error adding design to favorites'); //status: internal server error
             }
@@ -45,7 +45,7 @@ function deleteFavorite(req, res) {
         if (error) {
             return res.status(500).send('Error removing design from favorites'); //status: internal server error
         }
-        _designModel2.default.updateOne({ _id: req.params.designId }, { $inc: { likes: -1 } }, function (error) {
+        _designModel2.default.updateOne({ _id: req.params.designId }, { $pull: { likes: req.params.userId } }, function (error) {
             if (error) {
                 return res.status(500).send('Error adding design to favorites'); //status: internal server error
             }

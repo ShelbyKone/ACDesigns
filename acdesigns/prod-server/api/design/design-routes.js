@@ -30,7 +30,10 @@ var upload = (0, _multer2.default)({ dest: 'uploads/' });
 //return a design by id
 router.get('/design/:id', controller.getDesign);
 
-//return all designs
+//return all designs by a specific user
+router.get('/user/:id/designs', controller.getUserDesigns);
+
+//return all designs by query string
 router.get('/designs', controller.getDesigns);
 
 //update a design

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="my-4">
+  <v-container v-if="design" class="my-4">
     <v-row class="justify-center">
       <v-col
         class="col-md-8 col-lg-6 col-xl-4"
@@ -41,42 +41,50 @@
         :align="this.$vuetify.breakpoint.mdAndUp ? 'right' : 'center'"
       >
         <router-link
-          :to="{ name: 'About', params: { id: user._id } }"
+          v-if="design.user._id"
+          :to="{ name: 'About', params: { id: design.user._id } }"
           class="no-underline"
         >
-          <v-card max-width="250" align="center">
-            <v-card-text class="pt-6 pb-1">
-              <v-img
-                :src="
-                  user.image
-                    ? user.image
-                    : require('@/assets/default_profile_pic.png')
-                "
-                class="rounded-circle"
-                :aspect-ratio="9 / 9"
-                width="150"
-                ><template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="primary"
-                    ></v-progress-circular>
-                  </v-row>
-                </template>
-              </v-img>
-              <v-card-title class="justify-center">
-                {{ user.islandRep }}
-              </v-card-title>
-              <div><v-icon> mdi-island </v-icon> {{ user.islandName }}</div>
-              <v-card-subtitle class="text-center">{{
-                user.creatorCode
-              }}</v-card-subtitle>
-            </v-card-text>
-          </v-card>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-card v-on="on" max-width="250" align="center">
+                <v-card-text class="pt-6 pb-1">
+                  <v-img
+                    :src="
+                      design.user.image
+                        ? design.user.image
+                        : require('@/assets/default_profile_pic.png')
+                    "
+                    class="rounded-circle"
+                    :aspect-ratio="9 / 9"
+                    width="150"
+                    ><template v-slot:placeholder>
+                      <v-row
+                        class="fill-height ma-0"
+                        align="center"
+                        justify="center"
+                      >
+                        <v-progress-circular
+                          indeterminate
+                          color="primary"
+                        ></v-progress-circular>
+                      </v-row>
+                    </template>
+                  </v-img>
+                  <v-card-title class="justify-center">
+                    {{ design.user.islandRep }}
+                  </v-card-title>
+                  <div>
+                    <v-icon> mdi-island </v-icon> {{ design.user.islandName }}
+                  </div>
+                  <v-card-subtitle class="text-center">{{
+                    design.user.creatorCode
+                  }}</v-card-subtitle>
+                </v-card-text>
+              </v-card>
+            </template>
+            <span>View Profile</span>
+          </v-tooltip>
         </router-link>
         <v-card max-width="250" class="mt-10" align="center">
           <v-row>
@@ -85,14 +93,14 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      color="secondary"
+                      :color="iconColor"
                       class="elevation-3"
                       @click="toggleFavorite"
                       v-on="on"
                       dark
                       fab
                     >
-                      <v-icon dark large> {{ icon }} </v-icon>
+                      <v-icon class="mt-1" dark large>mdi-heart</v-icon>
                     </v-btn>
                   </template>
                   <span>{{ tooltip }}</span>
@@ -101,9 +109,7 @@
             </v-col>
             <v-col class="ml-n16">
               <v-card-text class="mt-n5">
-                <v-card-title class="justify-center">{{
-                  design.likes
-                }}</v-card-title>
+                <v-card-title class="justify-center">{{ likes }}</v-card-title>
                 <v-card-subtitle class="pb-0 text-center">
                   Favorites
                 </v-card-subtitle>
@@ -121,11 +127,12 @@
           }}</v-card-text>
         </v-card>
         <v-row
-          v-if="$store.state.userId == user._id"
+          v-if="$store.state.userId == design.user._id"
           justify="center"
-          class="mt-6"
+          class="mt-8"
         >
           <router-link
+            v-if="design"
             :to="{ name: 'DesignEdit', params: { id: design._id } }"
             class="mr-6 no-underline"
             >Edit Design</router-link
@@ -148,30 +155,35 @@
 <script>
 import * as ds from "../../services/DesignService";
 import * as fs from "../../services/FavoritesService";
-import * as auth from "../../services/UserService";
 
 export default {
   name: "Design",
   data: function () {
     return {
-      design: {},
-      user: {},
+      design: null,
     };
   },
   computed: {
-    icon() {
-      if (this.$store.state.isLoggedIn)
-        return this.$store.state.user.favorites.includes(this.design._id)
-          ? "mdi-close"
-          : "mdi-heart";
-      else return "mdi-heart";
+    iconColor() {
+      if (this.design.likes) {
+        if (this.$store.state.isLoggedIn)
+          return this.design.likes.includes(this.$store.state.userId)
+            ? "secondary"
+            : "grey lighten-1";
+        else return "grey lighten-1";
+      } else return "grey lighten-1";
     },
     tooltip() {
-      if (this.$store.state.isLoggedIn)
-        return this.$store.state.user.favorites.includes(this.design._id)
-          ? "Unfavorite"
-          : "Favorite";
-      else return "Favorite";
+      if (this.design.likes) {
+        if (this.$store.state.isLoggedIn)
+          return this.design.likes.includes(this.$store.state.userId)
+            ? "Unfavorite"
+            : "Favorite";
+        else return "Favorite";
+      } else return "Favorite";
+    },
+    likes() {
+      return this.design.likes ? this.design.likes.length : 0;
     },
   },
   methods: {
@@ -185,22 +197,18 @@ export default {
     },
     toggleFavorite: async function () {
       if (this.$store.state.isLoggedIn) {
-        if (this.$store.state.user.favorites.includes(this.design._id)) {
+        if (this.design.likes.includes(this.$store.state.userId)) {
           try {
             await fs.deleteFavorite(this.design._id);
-            const index = this.$store.state.user.favorites.indexOf(
-              this.design._id
-            );
-            this.$store.state.user.favorites.splice(index, 1);
-            this.design.likes--;
+            const index = this.design.likes.indexOf(this.$store.state.userId);
+            this.design.likes.splice(index, 1);
           } catch (error) {
             console.log(error);
           }
         } else {
           try {
             await fs.addFavorite(this.design._id);
-            this.$store.state.user.favorites.push(this.design._id);
-            this.design.likes++;
+            this.design.likes.push(this.$store.state.userId);
           } catch (error) {
             console.log(error);
           }
@@ -215,7 +223,6 @@ export default {
       ds.getDesign(to.params.id).then((res) => {
         next((vm) => {
           vm.design = res.data.design;
-          vm.user = res.data.design.user;
         });
       });
     } catch (error) {

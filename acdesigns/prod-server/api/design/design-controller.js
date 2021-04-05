@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.getDesign = getDesign;
+exports.getUserDesigns = getUserDesigns;
 exports.getDesigns = getDesigns;
 exports.updateDesign = updateDesign;
 exports.createDesign = createDesign;
@@ -42,6 +43,15 @@ function getDesign(req, res) {
     }).populate('user');
 }
 
+function getUserDesigns(req, res) {
+    _designModel2.default.find({ user: req.params.id }, function (error, designs) {
+        if (error) {
+            return res.status(500).send('Error retrieving users designs from database.'); //status: internal server error
+        }
+        return res.status(200).json({ designs: designs }); //status: success
+    });
+}
+
 function getDesigns(req, res) {
     _designModel2.default.find({}, function (error, designs) {
         if (error) {
@@ -65,7 +75,7 @@ function updateDesign(req, res) {
         }
 
         //create the design
-        var design = new _designModel2.default(req.body);
+        var design = req.body;
         design.tags = JSON.parse(design.tags);
 
         //if theres an image, upload it to s3 then update the design
@@ -94,7 +104,7 @@ function updateDesign(req, res) {
                     _fs2.default.unlinkSync(req.file.path); //empty uploads folder
                     //save the design to the db
                     design.image = data.Location;
-                    _designModel2.default.findOneAndUpdate({ _id: design._id }, design, function (error) {
+                    _designModel2.default.findOneAndUpdate({ _id: design._id }, { $set: design }, function (error) {
                         if (error) {
                             return res.status(500).send('Error creating design'); //status: internal server error
                         }
@@ -105,7 +115,7 @@ function updateDesign(req, res) {
         }
         //update the design without uploading a new image
         else {
-                _designModel2.default.findOneAndUpdate({ _id: design._id }, design, function (error) {
+                _designModel2.default.findOneAndUpdate({ _id: design._id }, { $set: design }, function (error) {
                     if (error) {
                         return res.status(500).send('Error creating design'); //status: internal server error
                     }

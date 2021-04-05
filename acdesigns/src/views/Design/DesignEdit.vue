@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <v-container v-if="design">
     <v-row class="justify-center mt-1">
-      <v-col class="col-md-6" align="center">
+      <v-col class="col-md-10 col-lg-8 col-xl-6" align="center">
         <v-form class="mb-3" ref="form" v-on:submit.prevent="onSubmit">
           <v-text-field
             v-model="design.title"
@@ -82,7 +82,7 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3" color="dark" dark>Post</v-btn>
+            <v-btn type="submit" class="mt-3" color="dark" dark>Update</v-btn>
             <v-progress-circular
               v-if="loading"
               class="mt-3 ml-3"
@@ -104,7 +104,7 @@ export default {
   name: "DesignCreate",
   data: function () {
     return {
-      design: {},
+      design: null,
       image: null,
       loading: false,
       error: "",
@@ -167,13 +167,15 @@ export default {
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
-    ds.getDesign(to.params.id).then((res) => {
-      //TODO: redirect if design doesn't exist, or unauthorized
+  beforeRouteEnter: async function (to, from, next) {
+    try {
+      let res = await ds.getDesign(to.params.id);
       next((vm) => {
         vm.design = res.data.design;
       });
-    });
+    } catch (error) {
+      console.log(error); //TODO: redirect if design doesn't exist
+    }
   },
 };
 </script>

@@ -16,6 +16,15 @@ export function getDesign(req, res) {
     }).populate('user')
 }
 
+export function getUserDesigns(req, res) {
+    Design.find({user: req.params.id}, (error, designs) => {
+        if (error) {
+            return res.status(500).send('Error retrieving users designs from database.') //status: internal server error
+        }
+        return res.status(200).json({ designs: designs }) //status: success
+    })
+}
+
 export function getDesigns(req, res) {
     Design.find({}, (error, designs) => {
         if (error) {
@@ -38,7 +47,7 @@ export function updateDesign(req, res) {
         }
 
         //create the design
-        const design = new Design(req.body)
+        const design = req.body
         design.tags = JSON.parse(design.tags)
 
         //if theres an image, upload it to s3 then update the design
@@ -67,7 +76,7 @@ export function updateDesign(req, res) {
                     fs.unlinkSync(req.file.path) //empty uploads folder
                     //save the design to the db
                     design.image = data.Location
-                    Design.findOneAndUpdate({ _id: design._id }, design, (error) => {
+                    Design.findOneAndUpdate({ _id: design._id }, { $set: design }, (error) => {
                         if (error) {
                             return res.status(500).send('Error creating design') //status: internal server error
                         }
@@ -78,7 +87,7 @@ export function updateDesign(req, res) {
         }
         //update the design without uploading a new image
         else {
-            Design.findOneAndUpdate({ _id: design._id }, design, (error) => {
+            Design.findOneAndUpdate({ _id: design._id }, { $set: design }, (error) => {
                 if (error) {
                     return res.status(500).send('Error creating design') //status: internal server error
                 }
