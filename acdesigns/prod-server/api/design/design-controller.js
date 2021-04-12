@@ -53,12 +53,17 @@ function getUserDesigns(req, res) {
 }
 
 function getDesigns(req, res) {
+    //get the query parameters
+    var page = req.query.page ? req.query.page : 1;
+    var limit = req.query.limit ? req.query.limit : 12;
+    var filter = req.query.filter;
+
     _designModel2.default.find({}, function (error, designs) {
         if (error) {
             return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
         }
         return res.status(200).json({ designs: designs });
-    }).populate('user');
+    });
 }
 
 function updateDesign(req, res) {
@@ -108,7 +113,7 @@ function updateDesign(req, res) {
                         if (error) {
                             return res.status(500).send('Error creating design'); //status: internal server error
                         }
-                        return res.status(204).send(); //status: success, no content
+                        return res.status(200).json({ id: design._id }); //status: success
                     });
                 }
             });
@@ -119,7 +124,7 @@ function updateDesign(req, res) {
                     if (error) {
                         return res.status(500).send('Error creating design'); //status: internal server error
                     }
-                    return res.status(204).send(); //status: success, no content
+                    return res.status(200).json({ id: design._id }); //status: success
                 });
             }
     }).catch(function () {

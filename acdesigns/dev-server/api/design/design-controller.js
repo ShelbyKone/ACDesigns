@@ -17,7 +17,7 @@ export function getDesign(req, res) {
 }
 
 export function getUserDesigns(req, res) {
-    Design.find({user: req.params.id}, (error, designs) => {
+    Design.find({ user: req.params.id }, (error, designs) => {
         if (error) {
             return res.status(500).send('Error retrieving users designs from database.') //status: internal server error
         }
@@ -26,12 +26,17 @@ export function getUserDesigns(req, res) {
 }
 
 export function getDesigns(req, res) {
+    //get the query parameters
+    const page = req.query.page ? req.query.page : 1
+    const limit = req.query.limit ? req.query.limit : 12
+    const filter = req.query.filter
+
     Design.find({}, (error, designs) => {
         if (error) {
             return res.status(500).send('Error retrieving designs from database.') //status: internal server error
         }
         return res.status(200).json({ designs: designs })
-    }).populate('user')
+    })
 }
 
 export function updateDesign(req, res) {
@@ -80,7 +85,7 @@ export function updateDesign(req, res) {
                         if (error) {
                             return res.status(500).send('Error creating design') //status: internal server error
                         }
-                        return res.status(204).send() //status: success, no content
+                        return res.status(200).json({ id: design._id }) //status: success
                     })
                 }
             })
@@ -91,7 +96,7 @@ export function updateDesign(req, res) {
                 if (error) {
                     return res.status(500).send('Error creating design') //status: internal server error
                 }
-                return res.status(204).send() //status: success, no content
+                return res.status(200).json({ id: design._id }) //status: success
             })
         }
     })

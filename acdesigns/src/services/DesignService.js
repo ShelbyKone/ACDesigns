@@ -58,7 +58,7 @@ export async function updateDesign(design) {
             baseURL: store.state.apiUrl,
             headers: { Authorization: token }
         }).put(`/design`, design)
-            .then(() => resolve())
+            .then(res => resolve(res))
             .catch(error => reject(error.response.data))
     })
 }

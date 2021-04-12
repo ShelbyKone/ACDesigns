@@ -1,6 +1,5 @@
 <template>
   <div>
-    <v-col>
       <v-row class="mx-auto mb-2" justify="center">
          <DesignCard
             v-for="design in designs"
@@ -9,7 +8,6 @@
             class="ma-3"
           />
       </v-row>
-    </v-col>
   </div>
 </template>
 

@@ -1,6 +1,5 @@
 <template>
-<v-col align="center">
-  <v-card max-width="1000">
+  <v-card width="100%">
     <v-card-text>
       <v-row>
         <v-col>
@@ -26,7 +25,6 @@
       </v-row>
     </v-card-text>
   </v-card>
-</v-col>
 </template>
 
 <script>

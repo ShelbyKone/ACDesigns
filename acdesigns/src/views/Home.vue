@@ -55,7 +55,7 @@ export default {
   data: function () {
     return {
       designs: [],
-      sort: ["Popular this week", "Popular this month", "New"],
+      sort: ["Popular", "New"],
       filter: ["All", "Shirts", "Dresses", "Hats", "Paths", "Misc"],
     };
   },

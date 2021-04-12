@@ -158,8 +158,8 @@ export default {
         }
 
         try {
-          await ds.updateDesign(formData);
-          this.$router.push({ name: "Home" });
+          let res = await ds.updateDesign(formData);
+          this.$router.push({ name: "Design", params: { id: res.data.id } });
         } catch (error) {
           this.loading = false;
           this.error = error;

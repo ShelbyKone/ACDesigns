@@ -33,7 +33,7 @@ router.get('/design/:id', controller.getDesign);
 //return all designs by a specific user
 router.get('/user/:id/designs', controller.getUserDesigns);
 
-//return all designs by query string
+//return all designs
 router.get('/designs', controller.getDesigns);
 
 //update a design

@@ -36,26 +36,38 @@
           >
         </v-row>
         <v-row class="mt-4" justify="center">
-          <v-btn
-            :to="{ name: 'About', params: { id: $route.params.id } }"
-            class="mx-6 secondary black--text"
-            >About</v-btn
-          >
-          <v-btn
-            :to="{ name: 'Favorites', params: { id: $route.params.id } }"
-            class="mx-6 secondary black--text"
-            >Favorites</v-btn
-          >
-          <v-btn
-            :to="{ name: 'Designs', params: { id: $route.params.id } }"
-            class="mx-6 secondary black--text"
-            >Designs</v-btn
-          >
+          <v-col class="col-md-12 col-lg-10 col-xl-8">
+            <v-tabs
+              fixed-tabs
+              icons-and-text
+              background-color="transparent"
+              color="dark"
+            >
+              <v-tab :to="{ name: 'About', params: { id: $route.params.id } }">
+                About
+                <v-icon>mdi-account</v-icon>
+              </v-tab>
+              <v-tab
+                :to="{ name: 'Designs', params: { id: $route.params.id } }"
+              >
+                Designs
+                <v-icon>mdi-lead-pencil</v-icon>
+              </v-tab>
+              <v-tab
+                :to="{ name: 'Favorites', params: { id: $route.params.id } }"
+              >
+                Favorites
+                <v-icon>mdi-heart</v-icon>
+              </v-tab>
+            </v-tabs>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
     <v-row class="mt-6" justify="center">
-      <router-view :user="user"></router-view>
+      <v-col class="col-md-12 col-lg-10 col-xl-8" align="center">
+        <router-view :user="user"></router-view>
+      </v-col>
     </v-row>
   </v-container>
 </template>
