@@ -26,9 +26,15 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _sharp = require('sharp');
+
+var _sharp2 = _interopRequireDefault(_sharp);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_sharp2.default.cache({ files: 0 });
 
 function getDesign(req, res) {
     _designModel2.default.findOne({ _id: req.params.id }, function (error, design) {
@@ -90,39 +96,48 @@ function updateDesign(req, res) {
                 _fs2.default.unlinkSync(req.file.path); //empty uploads folder
                 return res.status(422).send('File must be of type .jpeg or .png'); //status: Unprocessable Entity
             }
+            //update the image version (to refresh the cache)
+            design.imageVersion++;
 
-            //upload the image to s3
-            var s3 = new _aws2.default.S3();
-            var params = {
-                ACL: 'public-read',
-                Bucket: process.env.BUCKET_NAME,
-                Body: _fs2.default.createReadStream(req.file.path),
-                Key: 'designImage/' + design._id,
-                ContentType: req.file.mimetype
-            };
-            s3.upload(params, function (err, data) {
-                if (err) {
-                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                    return res.status(500).send('Error uploading file'); //status: internal server error
-                }
-                if (data) {
-                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                    //save the design to the db
-                    design.image = data.Location;
-                    _designModel2.default.findOneAndUpdate({ _id: design._id }, { $set: design }, function (error) {
-                        if (error) {
-                            return res.status(500).send('Error creating design'); //status: internal server error
-                        }
-                        return res.status(200).json({ id: design._id }); //status: success
-                    });
-                }
+            //resize the image
+            (0, _sharp2.default)(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer().then(function (buff) {
+                //upload the image to s3
+                var s3 = new _aws2.default.S3();
+                var params = {
+                    ACL: 'public-read',
+                    Bucket: process.env.BUCKET_NAME,
+                    Body: buff,
+                    Key: 'designImage/' + design._id,
+                    ContentType: 'image/jpeg'
+                };
+                s3.upload(params, function (err, data) {
+                    if (err) {
+                        _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                        return res.status(500).send('Error uploading file'); //status: internal server error
+                    }
+                    if (data) {
+                        _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                        //save the design to the db
+                        design.image = data.Location;
+                        _designModel2.default.findOneAndUpdate({ _id: design._id }, { $set: design }, function (error) {
+                            if (error) {
+                                return res.status(500).send('Error updating design'); //status: internal server error
+                            }
+                            return res.status(200).json({ id: design._id }); //status: success
+                        });
+                    }
+                });
+            }).catch(function () {
+                //if sharp fails
+                if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                return res.status(500).send('Error updating design'); //status: internal server error
             });
         }
         //update the design without uploading a new image
         else {
                 _designModel2.default.findOneAndUpdate({ _id: design._id }, { $set: design }, function (error) {
                     if (error) {
-                        return res.status(500).send('Error creating design'); //status: internal server error
+                        return res.status(500).send('Error updating design'); //status: internal server error
                     }
                     return res.status(200).json({ id: design._id }); //status: success
                 });
@@ -130,7 +145,7 @@ function updateDesign(req, res) {
     }).catch(function () {
         //if unable to get users id
         if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-        return res.status(500).send('Error creating design'); //status: internal server error
+        return res.status(500).send('Error updating design'); //status: internal server error
     });
 }
 
@@ -152,6 +167,7 @@ function createDesign(req, res) {
             user: userId,
             designCode: req.body.designCode,
             image: '',
+            imageVersion: 1,
             title: req.body.title,
             description: req.body.description,
             type: req.body.type,
@@ -160,31 +176,38 @@ function createDesign(req, res) {
         });
         var designId = design._id;
 
-        //upload the image to s3
-        var s3 = new _aws2.default.S3();
-        var params = {
-            ACL: 'public-read',
-            Bucket: process.env.BUCKET_NAME,
-            Body: _fs2.default.createReadStream(req.file.path),
-            Key: 'designImage/' + designId,
-            ContentType: req.file.mimetype
-        };
-        s3.upload(params, function (err, data) {
-            if (err) {
-                _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                return res.status(500).send('Error uploading file'); //status: internal server error
-            }
-            if (data) {
-                _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                //save the design to the db
-                design.image = data.Location;
-                design.save(function (error) {
-                    if (error) {
-                        return res.status(500).send('Error creating design'); //status: internal server error
-                    }
-                    return res.status(201).json({ id: designId }); //status: success, created
-                });
-            }
+        //resize the image
+        (0, _sharp2.default)(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer().then(function (buff) {
+            //upload the image to s3
+            var s3 = new _aws2.default.S3();
+            var params = {
+                ACL: 'public-read',
+                Bucket: process.env.BUCKET_NAME,
+                Body: buff,
+                Key: 'designImage/' + designId,
+                ContentType: 'image/jpeg'
+            };
+            s3.upload(params, function (err, data) {
+                if (err) {
+                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                    return res.status(500).send('Error uploading file'); //status: internal server error
+                }
+                if (data) {
+                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                    //save the design to the db
+                    design.image = data.Location;
+                    design.save(function (error) {
+                        if (error) {
+                            return res.status(500).send('Error creating design'); //status: internal server error
+                        }
+                        return res.status(201).json({ id: designId }); //status: success, created
+                    });
+                }
+            });
+        }).catch(function () {
+            //if sharp fails
+            if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+            return res.status(500).send('Error creating design'); //status: internal server error
         });
     }).catch(function () {
         //if unable to get users id

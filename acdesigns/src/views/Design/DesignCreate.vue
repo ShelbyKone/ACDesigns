@@ -83,13 +83,7 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3" color="dark" dark>Post</v-btn>
-            <v-progress-circular
-              v-if="loading"
-              class="mt-3 ml-3"
-              color="primary"
-              indeterminate
-            ></v-progress-circular>
+            <v-btn type="submit" class="mt-3" :loading="loading">Post</v-btn>
           </div>
         </v-form>
       </v-col>

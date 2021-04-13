@@ -23,6 +23,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _sharp = require('sharp');
+
+var _sharp2 = _interopRequireDefault(_sharp);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -41,6 +45,7 @@ function createUser(req, res) {
         creatorCode: '',
         about: '',
         image: '',
+        imageVersion: 1,
         favorites: []
     });
     //save the user to the db
@@ -73,7 +78,7 @@ function getUser(req, res) {
 function updateUser(req, res) {
     auth.getUserId(req).then(function (id) {
         //create the user
-        var user = new _userModel2.default(req.body);
+        var user = req.body;
 
         //only allow the user who made the request to update their own profile
         if (id != user._id) {
@@ -90,36 +95,46 @@ function updateUser(req, res) {
                 _fs2.default.unlinkSync(req.file.path); //empty uploads folder
                 return res.status(422).send('File must be of type .jpeg or .png'); //status: Unprocessable Entity
             }
-            //upload the image to s3
-            var s3 = new _aws2.default.S3();
-            var params = {
-                ACL: 'public-read',
-                Bucket: process.env.BUCKET_NAME,
-                Body: _fs2.default.createReadStream(req.file.path),
-                Key: 'profileImage/' + user._id,
-                ContentType: req.file.mimetype
-            };
-            s3.upload(params, function (err, data) {
-                if (err) {
-                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                    return res.status(500).send('Error uploading file'); //status: internal server error
-                }
-                if (data) {
-                    _fs2.default.unlinkSync(req.file.path); //empty uploads folder
-                    //update the user in the db
-                    user.image = data.Location;
-                    _userModel2.default.findOneAndUpdate({ _id: user._id }, user, function (error) {
-                        if (error) {
-                            return res.status(500).send('Server error: unable to update user'); //status: internal server error
-                        }
-                        return res.status(204).json(); //status: success, no content
-                    });
-                }
+            //update the image version (to refresh the cache)
+            user.imageVersion++;
+
+            //resize the image
+            (0, _sharp2.default)(req.file.path).resize(150, 150).jpeg({ quality: 90 }).toBuffer().then(function (buff) {
+                //upload the image to s3
+                var s3 = new _aws2.default.S3();
+                var params = {
+                    ACL: 'public-read',
+                    Bucket: process.env.BUCKET_NAME,
+                    Body: buff,
+                    Key: 'profileImage/' + user._id,
+                    ContentType: 'image/jpeg'
+                };
+                s3.upload(params, function (err, data) {
+                    if (err) {
+                        _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                        return res.status(500).send('Error uploading file'); //status: internal server error
+                    }
+                    if (data) {
+                        _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                        //update the user in the db
+                        user.image = data.Location;
+                        _userModel2.default.findOneAndUpdate({ _id: user._id }, { $set: user }, function (error) {
+                            if (error) {
+                                return res.status(500).send('Server error: unable to update user'); //status: internal server error
+                            }
+                            return res.status(204).json(); //status: success, no content
+                        });
+                    }
+                });
+            }).catch(function () {
+                //if sharp fails
+                if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
+                return res.status(500).send('Error updating user'); //status: internal server error
             });
         }
         //update the user without uploading an image
         else {
-                _userModel2.default.findOneAndUpdate({ _id: user._id }, user, function (error) {
+                _userModel2.default.findOneAndUpdate({ _id: user._id }, { $set: user }, function (error) {
                     if (error) {
                         return res.status(500).send('Server error: unable to update user'); //status: internal server error
                     }

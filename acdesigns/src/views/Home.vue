@@ -1,43 +1,30 @@
 <template>
-  <div>
-    <div>
-      <v-container class="my-6">
-        <v-row class="mb-n6">
-          <v-col>
-            <v-row justify="center">
-              <v-select
-                class="shrink"
-                :items="sort"
-                :value="sort[0]"
-                filled
-                rounded
-                dense
-              ></v-select>
-              <v-select
-                class="ml-3 shrink"
-                :items="filter"
-                :value="filter[0]"
-                filled
-                rounded
-                dense
-              ></v-select>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row class="mx-auto" justify="center">
-          <DesignCard
-            v-for="design in designs"
-            v-bind:key="design._id"
-            :design="design"
-            class="ma-3"
-          />
-        </v-row>
-        <v-row class="mt-6" justify="center">
-          <v-btn color="dark" dark>Load More</v-btn>
-        </v-row>
-      </v-container>
-    </div>
-  </div>
+  <v-row class="mt-6 mb-6" justify="center">
+    <v-col class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
+      <v-row justify="center" class="mb-n7">
+        <v-select
+          class="shrink"
+          color="dark"
+          :items="sort"
+          :value="sort[0]"
+          filled
+          rounded
+          dense
+        ></v-select>
+      </v-row>
+      <v-row class="mx-auto" justify="center">
+        <DesignCard
+          v-for="design in designs"
+          v-bind:key="design._id"
+          :design="design"
+          class="ma-3"
+        />
+      </v-row>
+      <v-row class="mt-6" justify="center">
+        <v-btn @click="loadMore" :loading="loading">Load More</v-btn>
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 
 <style>
@@ -56,8 +43,13 @@ export default {
     return {
       designs: [],
       sort: ["Popular", "New"],
-      filter: ["All", "Shirts", "Dresses", "Hats", "Paths", "Misc"],
+      loading: false,
     };
+  },
+  methods: {
+    loadMore: async function() {
+      this.loading = true
+    }
   },
   beforeRouteEnter(to, from, next) {
     try {

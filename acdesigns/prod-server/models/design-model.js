@@ -14,6 +14,7 @@ var designSchema = new _mongoose2.default.Schema({
     user: { type: String, ref: 'User' },
     designCode: String,
     image: String,
+    imageVersion: Number,
     title: String,
     description: String,
     type: String,

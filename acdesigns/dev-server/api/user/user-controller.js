@@ -2,6 +2,7 @@ import User from '../../models/user-model'
 import aws from '../../config/aws'
 import * as auth from '../../services/auth-service'
 import fs from 'fs'
+import sharp from 'sharp'
 
 //create the user in the database 
 export function createUser(req, res) {
@@ -17,6 +18,7 @@ export function createUser(req, res) {
         creatorCode: '',
         about: '',
         image: '',
+        imageVersion: 1,
         favorites: []
     })
     //save the user to the db
@@ -49,7 +51,7 @@ export function getUser(req, res) {
 export function updateUser(req, res) {
     auth.getUserId(req).then((id) => {
         //create the user
-        const user = new User(req.body)
+        const user = req.body
 
         //only allow the user who made the request to update their own profile
         if (id != user._id) {
@@ -66,36 +68,47 @@ export function updateUser(req, res) {
                 fs.unlinkSync(req.file.path) //empty uploads folder
                 return res.status(422).send('File must be of type .jpeg or .png') //status: Unprocessable Entity
             }
-            //upload the image to s3
-            const s3 = new aws.S3();
-            var params = {
-                ACL: 'public-read',
-                Bucket: process.env.BUCKET_NAME,
-                Body: fs.createReadStream(req.file.path),
-                Key: `profileImage/${user._id}`,
-                ContentType: req.file.mimetype
-            };
-            s3.upload(params, (err, data) => {
-                if (err) {
-                    fs.unlinkSync(req.file.path) //empty uploads folder
-                    return res.status(500).send('Error uploading file') //status: internal server error
-                }
-                if (data) {
-                    fs.unlinkSync(req.file.path) //empty uploads folder
-                    //update the user in the db
-                    user.image = data.Location
-                    User.findOneAndUpdate({ _id: user._id }, user, (error) => {
-                        if (error) {
-                            return res.status(500).send('Server error: unable to update user') //status: internal server error
+            //update the image version (to refresh the cache)
+            user.imageVersion++
+
+            //resize the image
+            sharp(req.file.path).resize(150, 150).jpeg({quality: 90}).toBuffer()
+                .then(buff => {
+                    //upload the image to s3
+                    const s3 = new aws.S3();
+                    var params = {
+                        ACL: 'public-read',
+                        Bucket: process.env.BUCKET_NAME,
+                        Body: buff,
+                        Key: `profileImage/${user._id}`,
+                        ContentType: 'image/jpeg'
+                    };
+                    s3.upload(params, (err, data) => {
+                        if (err) {
+                            fs.unlinkSync(req.file.path) //empty uploads folder
+                            return res.status(500).send('Error uploading file') //status: internal server error
                         }
-                        return res.status(204).json() //status: success, no content
+                        if (data) {
+                            fs.unlinkSync(req.file.path) //empty uploads folder
+                            //update the user in the db
+                            user.image = data.Location
+                            User.findOneAndUpdate({ _id: user._id }, { $set: user }, (error) => {
+                                if (error) {
+                                    return res.status(500).send('Server error: unable to update user') //status: internal server error
+                                }
+                                return res.status(204).json() //status: success, no content
+                            })
+                        }
                     })
-                }
-            })
+                })
+                .catch(() => { //if sharp fails
+                    if (req.file) fs.unlinkSync(req.file.path) //empty uploads folder
+                    return res.status(500).send('Error updating user') //status: internal server error
+                })
         }
         //update the user without uploading an image
         else {
-            User.findOneAndUpdate({ _id: user._id }, user, (error) => {
+            User.findOneAndUpdate({ _id: user._id }, { $set: user }, (error) => {
                 if (error) {
                     return res.status(500).send('Server error: unable to update user') //status: internal server error
                 }

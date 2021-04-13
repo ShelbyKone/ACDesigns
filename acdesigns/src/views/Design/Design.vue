@@ -10,7 +10,11 @@
           <v-card-subtitle class="pb-2 text-center">{{
             design.designCode
           }}</v-card-subtitle>
-          <v-img :src="design.image" :aspect-ratio="16 / 9" width="500">
+          <v-img
+            :src="design.image + '?v=' + design.imageVersion"
+            :aspect-ratio="16 / 9"
+            width="500"
+          >
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular
@@ -28,7 +32,7 @@
                 class="ma-1"
                 small
               >
-                <router-link to="/search" class="dark--text no-underline">
+                <router-link to="/search" class="black--text no-underline">
                   {{ tag }}
                 </router-link>
               </v-chip>
@@ -52,7 +56,7 @@
                   <v-img
                     :src="
                       design.user.image
-                        ? design.user.image
+                        ? design.user.image + '?v=' + design.user.imageVersion
                         : require('@/assets/default_profile_pic.png')
                     "
                     class="rounded-circle"
@@ -131,22 +135,15 @@
           justify="center"
           class="mt-8"
         >
-          <router-link
+          <v-btn
             v-if="design"
             :to="{ name: 'DesignEdit', params: { id: design._id } }"
             class="mr-6 no-underline"
-            >Edit Design</router-link
+            small
+            >Edit Design</v-btn
           >
-          <a @click="deleteDesign" class="ml-6">Delete Design</a>
+          <v-btn @click="deleteDesign" class="ml-6" :loading="loading" small>Delete Design</v-btn>
         </v-row>
-        <!--
-        <v-expansion-panels>
-          <v-expansion-panel class="mt-8 white">
-            <v-expansion-panel-header> Comments </v-expansion-panel-header>
-            <v-expansion-panel-content> </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
-        -->
       </v-col>
     </v-row>
   </v-container>
@@ -161,6 +158,7 @@ export default {
   data: function () {
     return {
       design: null,
+      loading: false,
     };
   },
   computed: {
@@ -189,10 +187,11 @@ export default {
   methods: {
     deleteDesign: async function () {
       try {
+        this.loading = true
         await ds.deleteDesign(this.design._id);
         this.$router.push({ name: "Home" });
       } catch (error) {
-        console.log(error);
+        this.loading = false
       }
     },
     toggleFavorite: async function () {

@@ -5,7 +5,7 @@
         <v-img
           :src="
             user.image
-              ? user.image
+              ? user.image + '?v=' + user.imageVersion
               : require('@/assets/default_profile_pic.png')
           "
           class="rounded-circle"
@@ -26,13 +26,13 @@
           justify="center"
           class="mb-4 mt-2"
         >
-          <router-link
+          <v-btn
             :to="{ name: 'ProfileEdit', params: { id: $route.params.id } }"
-            class="mr-6 no-underline"
-            >Update Profile</router-link
+            class="no-underline mr-6" small
+            >Update Profile</v-btn
           >
-          <router-link to="/reset-password" class="ml-6 no-underline"
-            >Change Password</router-link
+          <v-btn to="/reset-password" class="ml-6" small
+            >Change Password</v-btn
           >
         </v-row>
         <v-row class="mt-4" justify="center">

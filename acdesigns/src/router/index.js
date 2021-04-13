@@ -77,19 +77,19 @@ const routes = [
         name: 'Designs',
         component: Designs
       },
-      {
-        path: 'edit',
-        name: 'ProfileEdit',
-        component: ProfileEdit,
-        beforeEnter: (to, from, next) => {
-          if (auth.isLoggedIn() && to.params.id == auth.getUserId()) {
-            next()
-          } else {
-            next('/login')
-          }
-        }
-      }
     ]
+  },
+  {
+    path: '/profile/:id/edit',
+    name: 'ProfileEdit',
+    component: ProfileEdit,
+    beforeEnter: (to, from, next) => {
+      if (auth.isLoggedIn() && to.params.id == auth.getUserId()) {
+        next()
+      } else {
+        next('/login')
+      }
+    }
   },
   {
     path: '/design/:id',
@@ -109,7 +109,7 @@ const routes = [
     }
   },
   {
-    path: '/design-edit/:id',
+    path: '/design/:id/edit',
     name: 'DesignEdit',
     component: DesignEdit,
     beforeEnter: (to, from, next) => {

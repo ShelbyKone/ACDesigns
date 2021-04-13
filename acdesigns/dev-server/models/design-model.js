@@ -4,6 +4,7 @@ const designSchema = new mongoose.Schema({
     user: { type: String, ref: 'User' },
     designCode: String,
     image: String,
+    imageVersion: Number,
     title: String,
     description: String,
     type: String,

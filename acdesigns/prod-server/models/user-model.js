@@ -17,6 +17,7 @@ var userSchema = new _mongoose2.default.Schema({
     creatorCode: String,
     about: String,
     image: String,
+    imageVersion: Number,
     favorites: [{ type: _mongoose2.default.Schema.Types.ObjectId, ref: 'Design' }]
 });
 

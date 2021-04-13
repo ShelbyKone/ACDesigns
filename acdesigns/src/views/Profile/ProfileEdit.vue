@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="user">
     <v-row class="justify-center mt-1">
       <v-col class="col-md-10 col-lg-8 col-xl-6" align="center">
         <v-form v-on:submit.prevent="onSubmit" ref="form">
@@ -49,13 +49,7 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3 mb-2" color="dark" dark>Update</v-btn>
-            <v-progress-circular
-              v-if="loading"
-              class="mt-3 ml-3"
-              color="primary"
-              indeterminate
-            ></v-progress-circular>
+            <v-btn type="submit" class="mt-3 mb-2" :loading="loading">Update</v-btn>
           </div>
         </v-form>
       </v-col>
@@ -69,9 +63,9 @@ import FormData from "form-data";
 
 export default {
   name: "ProfileEdit",
-  props: ["user"],
   data: function () {
     return {
+      user: null,
       error: "",
       image: null,
       loading: false,
@@ -94,6 +88,7 @@ export default {
 
         if (this.image) {
           formData.append("image", this.image);
+          formData.append("imageVersion", this.user.imageVersion);
         }
 
         try {
@@ -106,6 +101,17 @@ export default {
         }
       }
     },
+  },
+    beforeRouteEnter(to, from, next) {
+    try {
+      auth.getUser(to.params.id).then((res) => {
+        next((vm) => {
+          vm.user = res.data.user;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
 };
 </script>

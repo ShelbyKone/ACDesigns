@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     creatorCode: String,
     about: String,
     image: String,
+    imageVersion: Number,
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Design' }]
 })
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card width="300" align="center" min-height="350">
-      <v-img :aspect-ratio="16 / 9" width="300" :src="design.image"
+      <v-img :aspect-ratio="16 / 9" width="300" :src="design.image + '?v=' + design.imageVersion"
         ><template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular
@@ -21,7 +21,7 @@
           class="ma-1"
           x-small
         >
-          <router-link to="/search" class="dark--text no-underline">
+          <router-link to="/search" class="black--text no-underline">
             {{ tag }}
           </router-link>
         </v-chip>
