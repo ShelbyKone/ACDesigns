@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row justify="center" class="mt-2">
+    <v-row justify="center" class="mt-0">
       <v-col align="center">
         <v-img
           :src="
@@ -27,7 +27,7 @@
           class="mb-4 mt-2"
         >
           <v-btn
-            :to="{ name: 'ProfileEdit', params: { id: $route.params.id } }"
+            :to="{ name: 'UserEdit', params: { id: $route.params.id } }"
             class="no-underline mr-6" small
             >Update Profile</v-btn
           >
@@ -64,7 +64,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mt-6" justify="center">
+    <v-row class="mt-4" justify="center">
       <v-col class="col-md-12 col-lg-10 col-xl-8" align="center">
         <router-view :user="user"></router-view>
       </v-col>
@@ -76,7 +76,7 @@
 import * as auth from "../../services/UserService";
 
 export default {
-  name: "Profile",
+  name: "User",
   data: function () {
     return {
       user: {},

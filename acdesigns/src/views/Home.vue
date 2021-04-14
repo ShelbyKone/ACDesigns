@@ -1,18 +1,20 @@
 <template>
-  <v-row class="mt-6 mb-6" justify="center">
-    <v-col class="col-sm-12 col-md-12 col-lg-10 col-xl-9">
-      <v-row justify="center" class="mb-n7">
+  <div align="center">
+    <v-col class="col-lg-10 col-xl-9">
+      <v-row class="mt-2 mb-n8" justify="center">
         <v-select
           class="shrink"
           color="dark"
-          :items="sort"
-          :value="sort[0]"
+          :items="sortOptions"
+          :value="sort"
+          @change="changeSort"
+          width="5"
           filled
           rounded
           dense
         ></v-select>
       </v-row>
-      <v-row class="mx-auto" justify="center">
+      <v-row class="mx-auto" align="center" justify="center">
         <DesignCard
           v-for="design in designs"
           v-bind:key="design._id"
@@ -20,11 +22,11 @@
           class="ma-3"
         />
       </v-row>
-      <v-row class="mt-6" justify="center">
+      <v-row class="mt-6 mb-3" justify="center">
         <v-btn @click="loadMore" :loading="loading">Load More</v-btn>
       </v-row>
     </v-col>
-  </v-row>
+  </div>
 </template>
 
 <style>
@@ -42,18 +44,35 @@ export default {
   data: function () {
     return {
       designs: [],
-      sort: ["Popular", "New"],
+      sortOptions: ["Popular", "New"],
+      sort: "Popular",
       loading: false,
     };
   },
   methods: {
-    loadMore: async function() {
-      this.loading = true
-    }
+    loadMore: async function () {
+      this.loading = true;
+    },
+    changeSort: async function (val) {
+      this.$router.push({ name: "Home", query: { sort: val.toLowerCase() } });
+    },
   },
   beforeRouteEnter(to, from, next) {
     try {
-      ds.getDesigns().then((res) => {
+      let sort = to.query.sort ? to.query.sort : "popular";
+      ds.getDesigns(sort).then((res) => {
+        next((vm) => {
+          vm.designs = res.data.designs;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    try {
+      let sort = to.query.sort ? to.query.sort : "popular";
+      ds.getDesigns(sort).then((res) => {
         next((vm) => {
           vm.designs = res.data.designs;
         });

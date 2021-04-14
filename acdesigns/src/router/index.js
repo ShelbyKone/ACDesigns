@@ -5,11 +5,11 @@ import Search from '../views/Search.vue'
 import Login from '../views/Auth/Login.vue'
 import Register from '../views/Auth/Register.vue'
 import ResetPassword from '../views/Auth/ResetPassword.vue'
-import Profile from '../views/Profile/Profile.vue'
-import ProfileEdit from '../views/Profile/ProfileEdit.vue'
-import Favorites from '../views/Profile/Favorites.vue'
-import Designs from '../views/Profile/Designs.vue'
-import About from '../views/Profile/About.vue'
+import User from '../views/User/User.vue'
+import UserEdit from '../views/User/UserEdit.vue'
+import Favorites from '../views/User/Favorites.vue'
+import Designs from '../views/User/Designs.vue'
+import About from '../views/User/About.vue'
 import Design from '../views/Design/Design.vue'
 import DesignCreate from '../views/Design/DesignCreate.vue'
 import DesignEdit from '../views/Design/DesignEdit.vue'
@@ -19,7 +19,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'Home',
     component: Home
   },
@@ -58,9 +58,9 @@ const routes = [
     component: ResetPassword,
   },
   {
-    path: '/profile/:id',
-    name: 'Profile',
-    component: Profile,
+    path: '/user/:id',
+    name: 'User',
+    component: User,
     children: [
       {
         path: 'about',
@@ -80,9 +80,9 @@ const routes = [
     ]
   },
   {
-    path: '/profile/:id/edit',
-    name: 'ProfileEdit',
-    component: ProfileEdit,
+    path: '/user/:id/edit',
+    name: 'UserEdit',
+    component: UserEdit,
     beforeEnter: (to, from, next) => {
       if (auth.isLoggedIn() && to.params.id == auth.getUserId()) {
         next()
@@ -122,7 +122,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: '/',
+    redirect: '/home',
   },
 ]
 

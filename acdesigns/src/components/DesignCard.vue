@@ -21,7 +21,7 @@
           class="ma-1"
           x-small
         >
-          <router-link to="/search" class="black--text no-underline">
+          <router-link to="/search" class="subtle--text no-underline">
             {{ tag }}
           </router-link>
         </v-chip>

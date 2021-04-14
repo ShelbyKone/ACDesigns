@@ -49,7 +49,18 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3 mb-2" :loading="loading">Update</v-btn>
+            <v-row class="mt-3">
+              <v-btn
+                :to="{ name: 'About', params: { id: user._id } }"
+                class="ml-3"
+                exact
+                >Cancel</v-btn
+              >
+              <v-spacer></v-spacer>
+              <v-btn type="submit" class="mr-3" :loading="loading"
+                >Update</v-btn
+              >
+            </v-row>
           </div>
         </v-form>
       </v-col>
@@ -62,7 +73,7 @@ import * as auth from "../../services/UserService";
 import FormData from "form-data";
 
 export default {
-  name: "ProfileEdit",
+  name: "UserEdit",
   data: function () {
     return {
       user: null,
@@ -93,7 +104,7 @@ export default {
 
         try {
           await auth.updateUser(formData);
-          this.$store.dispatch('authenticate')
+          this.$store.dispatch("authenticate");
           this.$router.push({ name: "About", params: { id: this.user._id } });
         } catch (error) {
           this.loading = false;
@@ -102,7 +113,7 @@ export default {
       }
     },
   },
-    beforeRouteEnter(to, from, next) {
+  beforeRouteEnter(to, from, next) {
     try {
       auth.getUser(to.params.id).then((res) => {
         next((vm) => {

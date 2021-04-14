@@ -5,7 +5,7 @@
         class="col-md-8 col-lg-6 col-xl-4"
         :align="this.$vuetify.breakpoint.mdAndUp ? 'left' : 'center'"
       >
-        <v-card width="500" min-height="453">
+        <v-card width="500" :min-height="this.$vuetify.breakpoint.mdAndUp ? 453 : 0">
           <v-card-title class="justify-center">{{ design.title }}</v-card-title>
           <v-card-subtitle class="pb-2 text-center">{{
             design.designCode
@@ -32,7 +32,7 @@
                 class="ma-1"
                 small
               >
-                <router-link to="/search" class="black--text no-underline">
+                <router-link to="/search" class="subtle--text no-underline">
                   {{ tag }}
                 </router-link>
               </v-chip>
@@ -142,7 +142,28 @@
             small
             >Edit Design</v-btn
           >
-          <v-btn @click="deleteDesign" class="ml-6" :loading="loading" small>Delete Design</v-btn>
+          <v-dialog v-model="dialog" max-width="290">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                @click="dialog = true"
+                class="ml-6"
+                v-bind="attrs"
+                v-on="on"
+                small
+                >Delete Design</v-btn
+              >
+            </template>
+            <v-card>
+              <v-card-title class="subtle--text text-center">
+                Are you sure you want to delete this design?
+              </v-card-title>
+              <v-card-actions>
+                <v-btn text @click="dialog = false"> No </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text @click="deleteDesign" color="error"> Yes </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-row>
       </v-col>
     </v-row>
@@ -158,7 +179,7 @@ export default {
   data: function () {
     return {
       design: null,
-      loading: false,
+      dialog: false,
     };
   },
   computed: {
@@ -187,11 +208,11 @@ export default {
   methods: {
     deleteDesign: async function () {
       try {
-        this.loading = true
+        this.loading = true;
         await ds.deleteDesign(this.design._id);
         this.$router.push({ name: "Home" });
       } catch (error) {
-        this.loading = false
+        this.loading = false;
       }
     },
     toggleFavorite: async function () {

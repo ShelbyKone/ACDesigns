@@ -31,7 +31,7 @@ export function getDesigns(req, res) {
     //get the query parameters
     const page = req.query.page ? req.query.page : 1
     const limit = req.query.limit ? req.query.limit : 12
-    const filter = req.query.filter
+    const filter = req.query.sort ? req.query.sort : 'new'
 
     Design.find({}, (error, designs) => {
         if (error) {

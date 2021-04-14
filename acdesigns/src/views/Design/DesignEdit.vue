@@ -17,6 +17,7 @@
             label="Design Code"
             :rules="rules.designCode"
             color="dark"
+            validate-on-blur
             filled
             dense
           >
@@ -44,22 +45,14 @@
             label="Tags"
             color="dark"
             :rules="rules.tags"
-            hint="Enter between 3 and 6 tags"
+            hint="Press enter to add a new tag"
             append-icon=""
             multiple
             chips
             persistent-hint
+            validate-on-blur
             filled
           >
-            <template v-slot:no-data>
-              <v-list-item class="my-n2">
-                <v-list-item-content>
-                  <v-list-item-title>
-                    Press <kbd>enter</kbd> to add tag.
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </template>
             <template v-slot:selection="{ attrs, item, selected }">
               <v-chip
                 v-bind="attrs"
@@ -82,7 +75,11 @@
             <p v-if="error" class="error--text">
               {{ error }}
             </p>
-            <v-btn type="submit" class="mt-3" :loading="loading">Update</v-btn>
+            <v-row class="mt-3">
+              <v-btn :to="{ name: 'Design', params: { id: design._id } }" class="ml-3" exact>Cancel</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn type="submit" class="mr-3" :loading="loading">Update</v-btn>
+            </v-row>
           </div>
         </v-form>
       </v-col>
@@ -149,7 +146,7 @@ export default {
 
         if (this.image) {
           formData.append("image", this.image);
-          formData.append("imageVersion", this.design.imageVersion)
+          formData.append("imageVersion", this.design.imageVersion);
         }
 
         try {

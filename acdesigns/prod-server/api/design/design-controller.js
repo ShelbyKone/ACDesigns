@@ -62,7 +62,7 @@ function getDesigns(req, res) {
     //get the query parameters
     var page = req.query.page ? req.query.page : 1;
     var limit = req.query.limit ? req.query.limit : 12;
-    var filter = req.query.filter;
+    var filter = req.query.sort ? req.query.sort : 'new';
 
     _designModel2.default.find({}, function (error, designs) {
         if (error) {

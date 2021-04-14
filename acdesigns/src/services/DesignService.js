@@ -25,11 +25,11 @@ export function getUserDesigns(id) {
 }
 
 // Get multiple designs by querystring
-export function getDesigns() {
+export function getDesigns(sort) {
     return new Promise((resolve, reject) => {
         axios.create({
             baseURL: store.state.apiUrl,
-        }).get(`/designs`)
+        }).get(`/designs`, { params: {sort: sort} })
             .then(res => resolve(res))
             .catch(error => reject(error.response.data))
     })

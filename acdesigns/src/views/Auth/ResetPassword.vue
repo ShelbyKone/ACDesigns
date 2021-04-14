@@ -35,7 +35,7 @@
 import * as auth from "../../services/UserService";
 
 export default {
-  name: "Login",
+  name: "ResetPassword",
   data: function () {
     return {
       email: "",

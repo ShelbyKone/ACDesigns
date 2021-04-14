@@ -1,22 +1,85 @@
 <template>
   <div>
     <v-app-bar color="dark" height="80" elevation="0" app>
-      <router-link to="/" class="hidden-xs-only white--text no-underline">
-        <h3>ACDesigns</h3>
-      </router-link>
-      <router-link
-        to="/"
-        class="hidden-sm-and-up no-underline"
-        :class="{ 'mr-2': $vuetify.breakpoint.xs }"
-      >
+      <router-link :to="{name: 'Home', query: {sort: 'popular'}}" class="no-underline mx-2">
         <v-btn color="secondary" class="elevation-0" dark fab small>
           <v-icon dark> mdi-home </v-icon>
         </v-btn>
       </router-link>
-      <v-spacer></v-spacer>
+      <div class="hidden-md-and-down">
+        <v-btn to="/design-create" class="mx-3" text dark exact>
+          <span>Post Design</span>
+        </v-btn>
+        <v-btn
+          to="/login"
+          v-if="!$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>Login</span>
+        </v-btn>
+        <v-btn
+          to="/register"
+          v-if="!$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>Register</span>
+        </v-btn>
+        <v-btn
+          :to="{ name: 'About', params: { id: this.$store.state.userId } }"
+          v-if="$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>Profile</span>
+        </v-btn>
+        <v-btn
+          :to="{
+            name: 'Designs',
+            params: { id: this.$store.state.userId },
+          }"
+          v-if="$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>My Designs</span>
+        </v-btn>
+        <v-btn
+          :to="{
+            name: 'Favorites',
+            params: { id: this.$store.state.userId },
+          }"
+          v-if="$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>My Favorites</span>
+        </v-btn>
+        <v-btn
+          v-on:click.prevent="logout"
+          v-if="$store.state.isLoggedIn"
+          class="mx-3"
+          text
+          dark
+          exact
+        >
+          <span>Logout</span>
+        </v-btn>
+      </div>
       <v-text-field
-        placeholder="Search Designs"
-        class="mt-7"
+        :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
+        class="mt-7 ml-3"
         color="primary"
         prepend-inner-icon="mdi-magnify"
         dark
@@ -24,10 +87,9 @@
         rounded
         dense
       ></v-text-field>
-      <v-btn color="primary" class="ml-n10 elevation-0" dark fab small>
+      <v-btn color="primary" class="ml-n10 mr-3 elevation-0" dark fab small>
         <v-icon dark> mdi-magnify </v-icon>
       </v-btn>
-      <v-spacer></v-spacer>
       <v-menu
         content-class="elevation-0 mt-3"
         transition="slide-y-transition"
@@ -37,15 +99,13 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn
-            class="elevation-0"
-            :class="{ 'ml-2': $vuetify.breakpoint.xs }"
-            color="secondary"
+            class="elevation-0 hidden-lg-and-up mr-1"
             v-on="on"
             dark
-            fab
-            small
+            icon
+            x-large
           >
-            <v-icon dark> mdi-account-circle </v-icon>
+            <v-icon dark> mdi-menu </v-icon>
           </v-btn>
         </template>
         <v-list color="dark">
