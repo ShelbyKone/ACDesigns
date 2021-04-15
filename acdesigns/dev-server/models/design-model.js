@@ -10,6 +10,6 @@ const designSchema = new mongoose.Schema({
     type: String,
     tags: [String],
     likes: [String],
-})
+}, { timestamps: true })
 
 export default mongoose.model('Design', designSchema)

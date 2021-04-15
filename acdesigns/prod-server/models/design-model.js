@@ -20,6 +20,6 @@ var designSchema = new _mongoose2.default.Schema({
     type: String,
     tags: [String],
     likes: [String]
-});
+}, { timestamps: true });
 
 exports.default = _mongoose2.default.model('Design', designSchema);

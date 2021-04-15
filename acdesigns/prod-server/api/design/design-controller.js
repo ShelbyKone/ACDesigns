@@ -50,7 +50,7 @@ function getDesign(req, res) {
 }
 
 function getUserDesigns(req, res) {
-    _designModel2.default.find({ user: req.params.id }, function (error, designs) {
+    _designModel2.default.find({ user: req.params.id }, null, { sort: { createdAt: -1 } }, function (error, designs) {
         if (error) {
             return res.status(500).send('Error retrieving users designs from database.'); //status: internal server error
         }
@@ -60,16 +60,42 @@ function getUserDesigns(req, res) {
 
 function getDesigns(req, res) {
     //get the query parameters
-    var page = req.query.page ? req.query.page : 1;
-    var limit = req.query.limit ? req.query.limit : 12;
-    var filter = req.query.sort ? req.query.sort : 'new';
+    var page = req.query.page ? parseInt(req.query.page) : 0;
+    var sort = req.query.sort ? req.query.sort : 'new';
+    //set the skip/limit for pagination
+    var limit = 12;
+    var skip = limit * page;
 
-    _designModel2.default.find({}, function (error, designs) {
-        if (error) {
-            return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
-        }
-        return res.status(200).json({ designs: designs });
-    });
+    if (sort == 'popular') {
+        _designModel2.default.aggregate([{
+            $project: {
+                title: true,
+                description: true,
+                type: true,
+                image: true,
+                imageVersion: true,
+                user: true,
+                tags: true,
+                designCode: true,
+                createdAt: true,
+                likes: true,
+                length: { $size: "$likes" }
+            }
+        }, { $sort: { length: -1, createdAt: -1 } }, { $skip: skip }, { $limit: limit }], function (error, designs) {
+            if (error) {
+                return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
+            }
+            return res.status(200).json({ designs: designs });
+        });
+    } else {
+        //sort by new
+        _designModel2.default.find({}, null, { sort: { createdAt: -1 }, limit: limit, skip: skip }, function (error, designs) {
+            if (error) {
+                return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
+            }
+            return res.status(200).json({ designs: designs });
+        });
+    }
 }
 
 function updateDesign(req, res) {

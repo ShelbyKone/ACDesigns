@@ -77,16 +77,17 @@
           <span>Logout</span>
         </v-btn>
       </div>
-      <v-text-field
-        :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
-        class="mt-7 ml-3"
-        color="primary"
-        prepend-inner-icon="mdi-magnify"
-        dark
-        filled
-        rounded
-        dense
-      ></v-text-field>
+        <v-text-field
+          :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
+          class="mt-7 ml-3"
+          color="primary"
+          prepend-inner-icon="mdi-magnify"
+          full-width
+          dark
+          filled
+          rounded
+          dense
+        ></v-text-field>
       <v-btn color="primary" class="ml-n10 mr-3 elevation-0" dark fab small>
         <v-icon dark> mdi-magnify </v-icon>
       </v-btn>
@@ -188,6 +189,9 @@ export default {
         console.log(error);
       }
     },
+    onSubmit: function() {
+      this.$router.push({ name: "Search", query: { term: 'test' } });
+    }
   },
 };
 </script>

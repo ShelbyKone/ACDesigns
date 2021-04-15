@@ -4,6 +4,6 @@ import * as controller from './search-controller'
 const router = express.Router()
 
 //return designs based on search criteria (query string)
-router.get('/search/designs', controller.searchDesigns)
+router.get('/search', controller.searchDesigns)
 
 export default router

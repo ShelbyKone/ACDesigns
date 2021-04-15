@@ -19,6 +19,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express2.default.Router();
 
 //return designs based on search criteria (query string)
-router.get('/search/designs', controller.searchDesigns);
+router.get('/search', controller.searchDesigns);
 
 exports.default = router;

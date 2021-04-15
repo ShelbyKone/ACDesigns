@@ -24,12 +24,23 @@ export function getUserDesigns(id) {
     })
 }
 
-// Get multiple designs by querystring
-export function getDesigns(sort) {
+// Get multiple designs, sorted
+export function getDesigns(sort, page) {
     return new Promise((resolve, reject) => {
         axios.create({
             baseURL: store.state.apiUrl,
-        }).get(`/designs`, { params: {sort: sort} })
+        }).get(`/designs`, { params: {sort: sort, page: page} })
+            .then(res => resolve(res))
+            .catch(error => reject(error.response.data))
+    })
+}
+
+// Get multiple designs by querystring
+export function searchDesigns(term, page) {
+    return new Promise((resolve, reject) => {
+        axios.create({
+            baseURL: store.state.apiUrl,
+        }).get(`/search`, { params: {term: term, page: page} })
             .then(res => resolve(res))
             .catch(error => reject(error.response.data))
     })

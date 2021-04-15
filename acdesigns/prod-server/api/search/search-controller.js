@@ -12,28 +12,31 @@ var _designModel2 = _interopRequireDefault(_designModel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function searchDesigns(req, res) {
+    //get the query parameters
+    var page = req.query.page ? parseInt(req.query.page) : 0;
+    var term = req.query.term ? req.query.term : "";
+    //set the skip/limit for pagination
+    var limit = 12;
+    var skip = limit * page;
+
     _designModel2.default.aggregate([{
         $search: {
             "compound": {
                 "must": [{
                     "text": {
-                        "query": ["cherry", "japan"],
+                        "query": term,
                         "path": ["title", "tags"]
                     }
-                }],
-                "filter": [{
-                    "text": {
-                        "query": "hat",
-                        "path": "type"
-                    }
                 }]
+                // "filter": [{
+                //     "text": {
+                //         "query": "hat",
+                //         "path": "type"
+                //     }
+                // }]
             }
         }
-    }, {
-        $skip: 0
-    }, {
-        $limit: 12
-    }], function (error, designs) {
+    }, { $skip: skip }, { $limit: limit }], function (error, designs) {
         if (error) {
             return res.status(500).send('Error retrieving designs from database.'); //status: internal server error
         }

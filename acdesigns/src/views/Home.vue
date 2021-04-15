@@ -7,6 +7,7 @@
           color="dark"
           :items="sortOptions"
           :value="sort"
+          :loading="loading"
           @change="changeSort"
           width="5"
           filled
@@ -23,7 +24,7 @@
         />
       </v-row>
       <v-row class="mt-6 mb-3" justify="center">
-        <v-btn @click="loadMore" :loading="loading">Load More</v-btn>
+        <v-btn v-if="more" @click="loadMore" :loading="loading">Load More</v-btn>
       </v-row>
     </v-col>
   </div>
@@ -44,25 +45,42 @@ export default {
   data: function () {
     return {
       designs: [],
-      sortOptions: ["Popular", "New"],
-      sort: "Popular",
+      sortOptions: ["popular", "new"],
+      sort: "popular",
+      page: 0,
       loading: false,
+      more: true,
     };
   },
   methods: {
     loadMore: async function () {
       this.loading = true;
+      this.page++;
+      try {
+        ds.getDesigns(this.sort, this.page).then((res) => {
+          this.loading = false;
+          if (res.data.designs.length < 12) this.more = false
+          this.designs = this.designs.concat(res.data.designs);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     changeSort: async function (val) {
-      this.$router.push({ name: "Home", query: { sort: val.toLowerCase() } });
+      this.loading = true;
+      this.$router.replace({
+        name: "Home",
+        query: { sort: val },
+      });
     },
   },
   beforeRouteEnter(to, from, next) {
     try {
       let sort = to.query.sort ? to.query.sort : "popular";
-      ds.getDesigns(sort).then((res) => {
+      ds.getDesigns(sort, 0).then((res) => {
         next((vm) => {
           vm.designs = res.data.designs;
+          vm.sort = sort;
         });
       });
     } catch (error) {
@@ -71,11 +89,12 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     try {
+      this.page = 0
       let sort = to.query.sort ? to.query.sort : "popular";
-      ds.getDesigns(sort).then((res) => {
-        next((vm) => {
-          vm.designs = res.data.designs;
-        });
+      ds.getDesigns(sort, 0).then((res) => {
+        this.loading = false;
+        this.designs = res.data.designs;
+        next();
       });
     } catch (error) {
       console.log(error);

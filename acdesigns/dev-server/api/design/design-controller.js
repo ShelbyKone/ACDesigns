@@ -3,7 +3,7 @@ import aws from '../../config/aws'
 import * as auth from '../../services/auth-service'
 import fs from 'fs'
 import sharp from 'sharp'
-sharp.cache({ files : 0 });
+sharp.cache({ files: 0 });
 
 export function getDesign(req, res) {
     Design.findOne({ _id: req.params.id }, (error, design) => {
@@ -19,7 +19,7 @@ export function getDesign(req, res) {
 }
 
 export function getUserDesigns(req, res) {
-    Design.find({ user: req.params.id }, (error, designs) => {
+    Design.find({ user: req.params.id }, null, { sort: { createdAt: -1 }, }, (error, designs) => {
         if (error) {
             return res.status(500).send('Error retrieving users designs from database.') //status: internal server error
         }
@@ -29,16 +29,50 @@ export function getUserDesigns(req, res) {
 
 export function getDesigns(req, res) {
     //get the query parameters
-    const page = req.query.page ? req.query.page : 1
-    const limit = req.query.limit ? req.query.limit : 12
-    const filter = req.query.sort ? req.query.sort : 'new'
+    const page = req.query.page ? parseInt(req.query.page) : 0
+    const sort = req.query.sort ? req.query.sort : 'new'
+    //set the skip/limit for pagination
+    const limit = 12
+    const skip = limit * page
 
-    Design.find({}, (error, designs) => {
-        if (error) {
-            return res.status(500).send('Error retrieving designs from database.') //status: internal server error
-        }
-        return res.status(200).json({ designs: designs })
-    })
+    if (sort == 'popular') {
+        Design.aggregate(
+            [
+                {
+                    $project: {
+                        title: true,
+                        description: true,
+                        type: true,
+                        image: true,
+                        imageVersion: true,
+                        user: true,
+                        tags: true,
+                        designCode: true,
+                        createdAt: true,
+                        likes: true,
+                        length: { $size: "$likes" }
+                    }
+                },
+                { $sort: { length: -1, createdAt: -1 } },
+                { $skip: skip },
+                { $limit: limit },
+            ],
+            (error, designs) => {
+                if (error) {
+                    return res.status(500).send('Error retrieving designs from database.') //status: internal server error
+                }
+                return res.status(200).json({ designs: designs })
+            }
+        )
+    }
+    else { //sort by new
+        Design.find({}, null, { sort: { createdAt: -1 }, limit: limit, skip: skip }, (error, designs) => {
+            if (error) {
+                return res.status(500).send('Error retrieving designs from database.') //status: internal server error
+            }
+            return res.status(200).json({ designs: designs })
+        })
+    }
 }
 
 export function updateDesign(req, res) {
@@ -68,7 +102,7 @@ export function updateDesign(req, res) {
             design.imageVersion++
 
             //resize the image
-            sharp(req.file.path).resize(500, 281).jpeg({quality: 90}).toBuffer()
+            sharp(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer()
                 .then(buff => {
                     //upload the image to s3
                     const s3 = new aws.S3();
@@ -145,7 +179,7 @@ export function createDesign(req, res) {
         const designId = design._id
 
         //resize the image
-        sharp(req.file.path).resize(500, 281).jpeg({quality: 90}).toBuffer()
+        sharp(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer()
             .then(buff => {
                 //upload the image to s3
                 const s3 = new aws.S3();
