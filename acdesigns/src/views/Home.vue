@@ -24,7 +24,9 @@
         />
       </v-row>
       <v-row class="mt-6 mb-3" justify="center">
-        <v-btn v-if="more" @click="loadMore" :loading="loading">Load More</v-btn>
+        <v-btn v-if="more" @click="loadMore" :loading="loading"
+          >Load More</v-btn
+        >
       </v-row>
     </v-col>
   </div>
@@ -59,7 +61,7 @@ export default {
       try {
         ds.getDesigns(this.sort, this.page).then((res) => {
           this.loading = false;
-          if (res.data.designs.length < 12) this.more = false
+          if (res.data.designs.length < 12) this.more = false;
           this.designs = this.designs.concat(res.data.designs);
         });
       } catch (error) {
@@ -88,9 +90,9 @@ export default {
     }
   },
   beforeRouteUpdate(to, from, next) {
+    this.page = 0;
+    let sort = to.query.sort ? to.query.sort : "popular";
     try {
-      this.page = 0
-      let sort = to.query.sort ? to.query.sort : "popular";
       ds.getDesigns(sort, 0).then((res) => {
         this.loading = false;
         this.designs = res.data.designs;

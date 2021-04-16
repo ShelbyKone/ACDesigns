@@ -36,11 +36,11 @@ export function getDesigns(sort, page) {
 }
 
 // Get multiple designs by querystring
-export function searchDesigns(term, page) {
+export function searchDesigns(term, filter, page) {
     return new Promise((resolve, reject) => {
         axios.create({
             baseURL: store.state.apiUrl,
-        }).get(`/search`, { params: {term: term, page: page} })
+        }).get(`/search`, { params: {term: term, filter: filter, page: page} })
             .then(res => resolve(res))
             .catch(error => reject(error.response.data))
     })

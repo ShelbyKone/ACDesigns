@@ -79,6 +79,7 @@
       </div>
         <v-text-field
           :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
+          v-model="searchTerm"
           class="mt-7 ml-3"
           color="primary"
           prepend-inner-icon="mdi-magnify"
@@ -88,7 +89,7 @@
           rounded
           dense
         ></v-text-field>
-      <v-btn color="primary" class="ml-n10 mr-3 elevation-0" dark fab small>
+      <v-btn @click="search" color="primary" class="ml-n10 mr-3 elevation-0" dark fab small>
         <v-icon dark> mdi-magnify </v-icon>
       </v-btn>
       <v-menu
@@ -178,19 +179,23 @@ import * as auth from "../services/UserService";
 export default {
   name: "Navbar",
   data: function () {
-    return {};
+    return {
+      searchTerm: '',
+    };
   },
   methods: {
     logout() {
       try {
         auth.logout();
-        this.$router.push({ name: "Home" }).catch(() => {});
+        this.$router.push({name: 'Home', query: {sort: 'popular'}}).catch(() => {});
       } catch (error) {
         console.log(error);
       }
     },
-    onSubmit: function() {
-      this.$router.push({ name: "Search", query: { term: 'test' } });
+    search: function() {
+      const term = this.searchTerm
+      this.searchTerm = ''
+      this.$router.push({ name: "Search", query: { term: term, filter: 'all' } });
     }
   },
 };

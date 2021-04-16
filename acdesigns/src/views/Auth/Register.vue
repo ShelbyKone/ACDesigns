@@ -91,7 +91,7 @@ export default {
         };
         try {
           await auth.register(user);
-          this.$router.push({ name: "Home" });
+          this.$router.push({name: 'Home', query: {sort: 'popular'}});
         } catch (error) {
           this.error = error;
         }

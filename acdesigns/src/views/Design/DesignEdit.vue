@@ -76,9 +76,16 @@
               {{ error }}
             </p>
             <v-row class="mt-3">
-              <v-btn :to="{ name: 'Design', params: { id: design._id } }" class="ml-3" exact>Cancel</v-btn>
+              <v-btn
+                :to="{ name: 'Design', params: { id: design._id } }"
+                class="ml-3"
+                exact
+                >Cancel</v-btn
+              >
               <v-spacer></v-spacer>
-              <v-btn type="submit" class="mr-3" :loading="loading">Update</v-btn>
+              <v-btn type="submit" class="mr-3" :loading="loading"
+                >Update</v-btn
+              >
             </v-row>
           </div>
         </v-form>
@@ -99,7 +106,26 @@ export default {
       image: null,
       loading: false,
       error: "",
-      filter: ["Shirt", "Dress", "Hat", "Path", "Misc"],
+      filter: [
+        "shirt",
+        "dress",
+        "hat",
+        "flag",
+        "path",
+        "stall",
+        "sign",
+        "food",
+        "cushion",
+        "artwork",
+        "floor decor",
+        "simple panel",
+        "face decor",
+        "phone case",
+        "umbrella",
+        "uchiwa fan",
+        "face cutout",
+        "other",
+      ],
       rules: {
         required: [(v) => !!v || "Required"],
         title: [
@@ -166,7 +192,8 @@ export default {
         vm.design = res.data.design;
       });
     } catch (error) {
-      console.log(error); //TODO: redirect if design doesn't exist
+      console.log(error);
+      this.$router.push({ name: "Home", query: { sort: 'popular' } });
     }
   },
 };

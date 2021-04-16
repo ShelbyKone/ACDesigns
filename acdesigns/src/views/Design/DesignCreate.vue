@@ -77,7 +77,7 @@
               {{ error }}
             </p>
             <v-row class="mt-3">
-              <v-btn to="/home" class="ml-3">Cancel</v-btn>
+              <v-btn :to="{name: 'Home', query: {sort: 'popular'}}" class="ml-3">Cancel</v-btn>
               <v-spacer></v-spacer>
               <v-btn type="submit" class="mr-3" :loading="loading">Post</v-btn>
             </v-row>
@@ -107,7 +107,26 @@ export default {
       },
       loading: false,
       error: "",
-      filter: ["Shirt", "Dress", "Hat", "Path", "Misc"],
+      filter: [
+        "shirt",
+        "dress",
+        "hat",
+        "flag",
+        "path",
+        "stall",
+        "sign",
+        "food",
+        "cushion",
+        "artwork",
+        "floor decor",
+        "simple panel",
+        "face decor",
+        "phone case",
+        "umbrella",
+        "uchiwa fan",
+        "face cutout",
+        "other",
+      ],
       rules: {
         required: [(v) => !!v || "Required"],
         title: [

@@ -72,7 +72,7 @@ export default {
         };
         try {
           await auth.login(user);
-          this.$router.push({ name: "Home" });
+          this.$router.push({name: 'Home', query: {sort: 'popular'}});
         } catch (error) {
           this.error = error;
         }

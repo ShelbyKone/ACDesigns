@@ -46,9 +46,10 @@ export default {
     onSubmit: async function () {
       try {
         await auth.resetPassword(this.email);
-        this.$router.push({ name: "Login" });
+        if (this.$store.state.isLoggedIn) this.$router.push({name: 'Home', query: {sort: 'popular'}});
+        else this.$router.push({ name: "Login" });
       } catch (error) {
-        this.error = error.message
+        this.error = error
       }
     },
   },
