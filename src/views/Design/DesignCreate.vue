@@ -15,6 +15,7 @@
           <v-text-field
             v-model="design.designCode"
             label="Design Code"
+            hint="Design code must follow format MO-1234-1234-1234"
             :rules="rules.designCode"
             color="dark"
             validate-on-blur
@@ -77,7 +78,11 @@
               {{ error }}
             </p>
             <v-row class="mt-3">
-              <v-btn :to="{name: 'Home', query: {sort: 'popular'}}" class="ml-3">Cancel</v-btn>
+              <v-btn
+                :to="{ name: 'Home', query: { sort: 'popular' } }"
+                class="ml-3"
+                >Cancel</v-btn
+              >
               <v-spacer></v-spacer>
               <v-btn type="submit" class="mr-3" :loading="loading">Post</v-btn>
             </v-row>
@@ -99,7 +104,6 @@ export default {
       design: {
         user: "",
         designCode: "",
-        image: null,
         title: "",
         type: "",
         description: "",
@@ -108,24 +112,24 @@ export default {
       loading: false,
       error: "",
       filter: [
-        "shirt",
-        "dress",
-        "hat",
-        "flag",
-        "path",
-        "stall",
-        "sign",
-        "food",
-        "cushion",
         "artwork",
-        "floor decor",
-        "simple panel",
-        "face decor",
-        "phone case",
-        "umbrella",
-        "uchiwa fan",
+        "cushion",
+        "dress",
         "face cutout",
+        "face decor",
+        "flag",
+        "floor decor",
+        "food",
+        "hat",
         "other",
+        "path",
+        "phone case",
+        "shirt",
+        "sign",
+        "simple panel",
+        "stall",
+        "uchiwa fan",
+        "umbrella",
       ],
       rules: {
         required: [(v) => !!v || "Required"],
@@ -161,6 +165,12 @@ export default {
     onSubmit: async function () {
       if (this.$refs.form.validate()) {
         this.loading = true;
+
+        if (this.design.image.size > 1000000) {
+          this.error = "Image must be less than 1MB in size.";
+          this.loading = false;
+          return;
+        }
 
         let formData = new FormData();
         formData.append("title", this.design.title);

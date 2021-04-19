@@ -98,6 +98,11 @@ export default {
         formData.append("about", this.user.about);
 
         if (this.image) {
+          if (this.image.size > 1000000) {
+            this.error = "Image must be less than 1MB in size.";
+            this.loading = false;
+            return;
+          }
           formData.append("image", this.image);
           formData.append("imageVersion", this.user.imageVersion);
         }

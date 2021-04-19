@@ -81,6 +81,7 @@ export default {
       let sort = to.query.sort ? to.query.sort : "popular";
       ds.getDesigns(sort, 0).then((res) => {
         next((vm) => {
+          vm.more = res.data.designs.length < 12 ? false : true;
           vm.designs = res.data.designs;
           vm.sort = sort;
         });
@@ -90,10 +91,12 @@ export default {
     }
   },
   beforeRouteUpdate(to, from, next) {
-    this.page = 0;
     let sort = to.query.sort ? to.query.sort : "popular";
     try {
       ds.getDesigns(sort, 0).then((res) => {
+        this.more = res.data.designs.length < 12 ? false : true;
+        this.sort = sort
+        this.page = 0;
         this.loading = false;
         this.designs = res.data.designs;
         next();

@@ -15,6 +15,7 @@
           <v-text-field
             v-model="design.designCode"
             label="Design Code"
+            hint="Design code must follow format MO-1234-1234-1234"
             :rules="rules.designCode"
             color="dark"
             validate-on-blur
@@ -107,24 +108,24 @@ export default {
       loading: false,
       error: "",
       filter: [
-        "shirt",
-        "dress",
-        "hat",
-        "flag",
-        "path",
-        "stall",
-        "sign",
-        "food",
-        "cushion",
         "artwork",
-        "floor decor",
-        "simple panel",
-        "face decor",
-        "phone case",
-        "umbrella",
-        "uchiwa fan",
+        "cushion",
+        "dress",
         "face cutout",
+        "face decor",
+        "flag",
+        "floor decor",
+        "food",
+        "hat",
         "other",
+        "path",
+        "phone case",
+        "shirt",
+        "sign",
+        "simple panel",
+        "stall",
+        "uchiwa fan",
+        "umbrella",
       ],
       rules: {
         required: [(v) => !!v || "Required"],
@@ -171,6 +172,11 @@ export default {
         formData.append("tags", JSON.stringify(this.design.tags));
 
         if (this.image) {
+          if (this.image.size > 1000000) {
+            this.error = "Image must be less than 1MB in size.";
+            this.loading = false;
+            return;
+          }
           formData.append("image", this.image);
           formData.append("imageVersion", this.design.imageVersion);
         }
@@ -193,7 +199,7 @@ export default {
       });
     } catch (error) {
       console.log(error);
-      this.$router.push({ name: "Home", query: { sort: 'popular' } });
+      this.$router.push({ name: "Home", query: { sort: "popular" } });
     }
   },
 };
