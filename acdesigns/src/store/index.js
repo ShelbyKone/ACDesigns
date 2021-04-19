@@ -8,7 +8,9 @@ export default new Vuex.Store({
   state: {
     isLoggedIn: false,
     userId: null,
-    apiUrl: `${window.location.protocol}//${window.location.hostname}:3000/api`
+    apiUrl: (process.env.NODE_ENV == 'production') ? 
+    `${window.location.protocol}//${window.location.hostname}/api` : 
+    `${window.location.protocol}//${window.location.hostname}:3000/api`
   },
   mutations: {
     authenticate(state) {
