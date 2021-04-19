@@ -1,7 +1,5 @@
 import * as admin from 'firebase-admin'
 
-console.log(process.env.PRIVATE_KEY)
-
 const serviceAccountObject = {
   type: "service_account",
   project_id: "acdesigns-402c0",
