@@ -1,20 +1,4 @@
-# Development
 node_modules
-/dist
 serviceAccountKey.json
 .env
-
-# Production
-# node_modules
-# dev-server
-# public
-# src
-# uploads
-# serviceAccountKey.json
-# .env
-# .browserslistrc
-# .eslintrc.js
-# babel.config.js
-# package-lock.json
-# README.md
-# vue.config.js
+package-lock.json
