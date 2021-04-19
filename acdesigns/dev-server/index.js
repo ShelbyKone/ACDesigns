@@ -1,5 +1,4 @@
 import express from 'express'
-import dotenv from 'dotenv';
 import path from 'path'
 import { registerRoutes } from './routes'
 import { setEnvironment } from './config/set-env'
@@ -7,7 +6,6 @@ import { connectToDB } from './config/db'
 const app = express()
 const port = process.env.PORT || 3000
 
-dotenv.config();
 setEnvironment(app)
 connectToDB()
 registerRoutes(app)
