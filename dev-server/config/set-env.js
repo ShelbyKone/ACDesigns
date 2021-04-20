@@ -21,7 +21,7 @@ function setDevEnv(app) {
 
 function setProdEnv(app) {
     process.env.NODE_ENV = 'production';
-    process.env.DB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/acdesigns-dev?authSource=admin&retryWrites=true&w=majority`
+    process.env.DB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/acdesigns-prod?authSource=admin&retryWrites=true&w=majority`
     app.use(bodyParser.json())
     app.use(express.static(__dirname + '/../../dist'))
 }

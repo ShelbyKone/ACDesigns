@@ -86,6 +86,8 @@ export function updateDesign(req, res) {
             if (req.file) fs.unlinkSync(req.file.path) //empty uploads folder
             return res.status(400).send('Include all required fields') //status: bad request
         }
+        //set the environment type
+        const environment = (process.env.NODE_ENV == 'production') ? 'prod' : 'dev'
 
         //create the design
         const design = req.body
@@ -110,7 +112,7 @@ export function updateDesign(req, res) {
                         ACL: 'public-read',
                         Bucket: process.env.BUCKET_NAME,
                         Body: buff,
-                        Key: `designImage/${design._id}`,
+                        Key: `designImage/${environment}/${design._id}`,
                         ContentType: 'image/jpeg'
                     };
                     s3.upload(params, (err, data) => {
@@ -178,6 +180,9 @@ export function createDesign(req, res) {
         })
         const designId = design._id
 
+        //set the environment type
+        const environment = (process.env.NODE_ENV == 'production') ? 'prod' : 'dev'
+
         //resize the image
         sharp(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer()
             .then(buff => {
@@ -187,7 +192,7 @@ export function createDesign(req, res) {
                     ACL: 'public-read',
                     Bucket: process.env.BUCKET_NAME,
                     Body: buff,
-                    Key: `designImage/${designId}`,
+                    Key: `designImage/${environment}/${designId}`,
                     ContentType: 'image/jpeg'
                 };
                 s3.upload(params, (err, data) => {

@@ -110,6 +110,8 @@ function updateDesign(req, res) {
             if (req.file) _fs2.default.unlinkSync(req.file.path); //empty uploads folder
             return res.status(400).send('Include all required fields'); //status: bad request
         }
+        //set the environment type
+        var environment = process.env.NODE_ENV == 'production' ? 'prod' : 'dev';
 
         //create the design
         var design = req.body;
@@ -133,7 +135,7 @@ function updateDesign(req, res) {
                     ACL: 'public-read',
                     Bucket: process.env.BUCKET_NAME,
                     Body: buff,
-                    Key: 'designImage/' + design._id,
+                    Key: 'designImage/' + environment + '/' + design._id,
                     ContentType: 'image/jpeg'
                 };
                 s3.upload(params, function (err, data) {
@@ -202,6 +204,9 @@ function createDesign(req, res) {
         });
         var designId = design._id;
 
+        //set the environment type
+        var environment = process.env.NODE_ENV == 'production' ? 'prod' : 'dev';
+
         //resize the image
         (0, _sharp2.default)(req.file.path).resize(500, 281).jpeg({ quality: 90 }).toBuffer().then(function (buff) {
             //upload the image to s3
@@ -210,7 +215,7 @@ function createDesign(req, res) {
                 ACL: 'public-read',
                 Bucket: process.env.BUCKET_NAME,
                 Body: buff,
-                Key: 'designImage/' + designId,
+                Key: 'designImage/' + environment + '/' + designId,
                 ContentType: 'image/jpeg'
             };
             s3.upload(params, function (err, data) {

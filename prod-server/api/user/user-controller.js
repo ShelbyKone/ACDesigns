@@ -98,6 +98,9 @@ function updateUser(req, res) {
             //update the image version (to refresh the cache)
             user.imageVersion++;
 
+            //set the environment type
+            var environment = process.env.NODE_ENV == 'production' ? 'prod' : 'dev';
+
             //resize the image
             (0, _sharp2.default)(req.file.path).resize(150, 150).jpeg({ quality: 90 }).toBuffer().then(function (buff) {
                 //upload the image to s3
@@ -106,7 +109,7 @@ function updateUser(req, res) {
                     ACL: 'public-read',
                     Bucket: process.env.BUCKET_NAME,
                     Body: buff,
-                    Key: 'profileImage/' + user._id,
+                    Key: 'profileImage/' + environment + '/' + user._id,
                     ContentType: 'image/jpeg'
                 };
                 s3.upload(params, function (err, data) {

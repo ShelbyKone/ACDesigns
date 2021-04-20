@@ -71,8 +71,11 @@ export function updateUser(req, res) {
             //update the image version (to refresh the cache)
             user.imageVersion++
 
+            //set the environment type
+            const environment = (process.env.NODE_ENV == 'production') ? 'prod' : 'dev'
+
             //resize the image
-            sharp(req.file.path).resize(150, 150).jpeg({quality: 90}).toBuffer()
+            sharp(req.file.path).resize(150, 150).jpeg({ quality: 90 }).toBuffer()
                 .then(buff => {
                     //upload the image to s3
                     const s3 = new aws.S3();
@@ -80,7 +83,7 @@ export function updateUser(req, res) {
                         ACL: 'public-read',
                         Bucket: process.env.BUCKET_NAME,
                         Body: buff,
-                        Key: `profileImage/${user._id}`,
+                        Key: `profileImage/${environment}/${user._id}`,
                         ContentType: 'image/jpeg'
                     };
                     s3.upload(params, (err, data) => {

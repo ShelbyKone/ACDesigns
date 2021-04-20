@@ -1,19 +1,22 @@
 <template>
   <div>
     <v-app-bar color="dark" height="80" elevation="0" app>
-      <router-link :to="{name: 'Home', query: {sort: 'popular'}}" class="no-underline mx-2">
-        <v-btn color="secondary" class="elevation-0" dark fab small>
+      <router-link
+        :to="{ name: 'Home', query: { sort: 'popular' } }"
+        class="no-underline mx-2"
+      >
+        <v-btn color="secondary" class="elevation-0 mx-3" dark fab small>
           <v-icon dark> mdi-home </v-icon>
         </v-btn>
       </router-link>
       <div class="hidden-md-and-down">
-        <v-btn to="/design-create" class="mx-3" text dark exact>
+        <v-btn to="/design-create" class="mx-4" text dark exact>
           <span>Post Design</span>
         </v-btn>
         <v-btn
           to="/login"
           v-if="!$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -23,7 +26,7 @@
         <v-btn
           to="/register"
           v-if="!$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -33,7 +36,7 @@
         <v-btn
           :to="{ name: 'About', params: { id: this.$store.state.userId } }"
           v-if="$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -46,7 +49,7 @@
             params: { id: this.$store.state.userId },
           }"
           v-if="$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -59,7 +62,7 @@
             params: { id: this.$store.state.userId },
           }"
           v-if="$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -69,7 +72,7 @@
         <v-btn
           v-on:click.prevent="logout"
           v-if="$store.state.isLoggedIn"
-          class="mx-3"
+          class="mx-4"
           text
           dark
           exact
@@ -77,21 +80,34 @@
           <span>Logout</span>
         </v-btn>
       </div>
-        <v-text-field
-          :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
-          v-model="searchTerm"
-          class="mt-7 ml-3"
-          color="primary"
-          prepend-inner-icon="mdi-magnify"
-          full-width
-          dark
-          filled
-          rounded
-          dense
-        ></v-text-field>
-      <v-btn @click="search" color="primary" class="ml-n10 mr-3 elevation-0" dark fab small>
-        <v-icon dark> mdi-magnify </v-icon>
-      </v-btn>
+      <v-col fluid>
+        <v-form v-on:submit.prevent="search">
+          <v-row>
+            <v-text-field
+              :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
+              v-model="searchTerm"
+              class="ml-4"
+              color="primary"
+              prepend-inner-icon="mdi-magnify"
+              dark
+              hide-details
+              filled
+              rounded
+              dense
+            ></v-text-field>
+            <v-btn
+              type="submit"
+              color="primary"
+              class="ml-n10 mr-4 elevation-0"
+              dark
+              fab
+              small
+            >
+              <v-icon dark> mdi-magnify </v-icon>
+            </v-btn>
+          </v-row>
+        </v-form>
+      </v-col>
       <v-menu
         content-class="elevation-0 mt-3"
         transition="slide-y-transition"
@@ -180,23 +196,28 @@ export default {
   name: "Navbar",
   data: function () {
     return {
-      searchTerm: '',
+      searchTerm: "",
     };
   },
   methods: {
     logout() {
       try {
         auth.logout();
-        this.$router.push({name: 'Home', query: {sort: 'popular'}}).catch(() => {});
+        this.$router
+          .push({ name: "Home", query: { sort: "popular" } })
+          .catch(() => {});
       } catch (error) {
         console.log(error);
       }
     },
-    search: function() {
-      const term = this.searchTerm
-      this.searchTerm = ''
-      this.$router.push({ name: "Search", query: { term: term, filter: 'all' } });
-    }
+    search: function () {
+      const term = this.searchTerm;
+      this.searchTerm = "";
+      this.$router.push({
+        name: "Search",
+        query: { term: term, filter: "all" },
+      });
+    },
   },
 };
 </script>
