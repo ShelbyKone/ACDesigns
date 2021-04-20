@@ -3,9 +3,16 @@
     <v-app-bar color="dark" height="80" elevation="0" app>
       <router-link
         :to="{ name: 'Home', query: { sort: 'popular' } }"
-        class="no-underline mx-2"
+        class="no-underline"
       >
-        <v-btn color="secondary" class="elevation-0 mx-3" dark fab small>
+        <v-btn
+          color="secondary"
+          class="elevation-0"
+          :class="{ 'mx-4': $vuetify.breakpoint.smAndUp }"
+          dark
+          fab
+          small
+        >
           <v-icon dark> mdi-home </v-icon>
         </v-btn>
       </router-link>
@@ -82,32 +89,32 @@
       </div>
       <v-col fluid>
         <v-form v-on:submit.prevent="search">
-          <v-row>
-            <v-text-field
-              :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
-              v-model="searchTerm"
-              class="ml-4"
-              color="primary"
-              prepend-inner-icon="mdi-magnify"
-              dark
-              hide-details
-              filled
-              rounded
-              dense
-            ></v-text-field>
-            <v-btn
-              type="submit"
-              color="primary"
-              class="ml-n10 mr-4 elevation-0"
-              dark
-              fab
-              small
-            >
-              <v-icon dark> mdi-magnify </v-icon>
-            </v-btn>
-          </v-row>
+          <v-text-field
+            :placeholder="$vuetify.breakpoint.xs ? '' : 'Search Designs'"
+            v-model="searchTerm"
+            class="ml-4"
+            color="primary"
+            prepend-inner-icon="mdi-magnify"
+            dark
+            hide-details
+            filled
+            rounded
+            dense
+          >
+          </v-text-field>
         </v-form>
       </v-col>
+      <v-btn
+        @click="search"
+        color="primary"
+        class="ml-n10 elevation-0"
+        :class="{ 'mr-4': $vuetify.breakpoint.smAndUp }"
+        dark
+        fab
+        small
+      >
+        <v-icon dark> mdi-magnify </v-icon>
+      </v-btn>
       <v-menu
         content-class="elevation-0 mt-3"
         transition="slide-y-transition"
@@ -117,7 +124,8 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn
-            class="elevation-0 hidden-lg-and-up mr-1"
+            class="elevation-0 hidden-lg-and-up"
+            :class="{ 'mr-4': $vuetify.breakpoint.smAndUp }"
             v-on="on"
             dark
             icon

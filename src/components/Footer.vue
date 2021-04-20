@@ -3,13 +3,7 @@
     <v-row justify="center" no-gutters class="dark">
       <v-card flat tile class="dark text-center" max-width="1000">
         <v-card-text class="pt-3">
-          <v-btn class="mx-4" icon>
-            <v-icon size="24px"> mdi-linkedin </v-icon>
-          </v-btn>
-          <v-btn class="mx-4" icon>
-            <v-icon size="24px"> mdi-reddit </v-icon>
-          </v-btn>
-          <v-btn class="mx-4" icon>
+          <v-btn class="mx-4" icon href="https://twitter.com/ACDesigns_app" target="_blank">
             <v-icon size="24px"> mdi-twitter </v-icon>
           </v-btn>
         </v-card-text>
@@ -17,7 +11,7 @@
           ACDesigns was created as my senior capstone project for my bachelors
           degree. I love the Animal Crossing games, so when I had no ideas for
           my project I figured I might as well do something fun! ACDesigns is my
-          personal project and is no way affiliated with Nintendo.
+          personal project and is in no way affiliated with Nintendo.
         </v-card-text>
       </v-card>
     </v-row>

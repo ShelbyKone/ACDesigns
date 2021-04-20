@@ -23,13 +23,9 @@ function searchDesigns(req, res) {
     if (filter == 'all') {
         _designModel2.default.aggregate([{
             $search: {
-                "compound": {
-                    "must": [{
-                        "text": {
-                            "query": term,
-                            "path": ["title", "tags"]
-                        }
-                    }]
+                "text": {
+                    "query": term,
+                    "path": ["title", "tags"]
                 }
             }
         }, { $skip: skip }, { $limit: limit }], function (error, designs) {

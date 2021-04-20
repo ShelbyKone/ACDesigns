@@ -13,14 +13,10 @@ export function searchDesigns(req, res) {
         Design.aggregate([
             {
                 $search: {
-                    "compound": {
-                        "must": [{
-                            "text": {
-                                "query": term,
-                                "path": ["title", "tags"]
-                            },
-                        }],
-                    }
+                    "text": {
+                        "query": term,
+                        "path": ["title", "tags"]
+                    },
                 }
             },
             { $skip: skip },

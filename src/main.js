@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import { fb } from './services/firebase'
+import VueSocialSharing from 'vue-social-sharing'
+Vue.use(VueSocialSharing);
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
