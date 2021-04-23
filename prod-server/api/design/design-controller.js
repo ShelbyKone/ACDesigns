@@ -252,13 +252,15 @@ function deleteDesign(req, res) {
         if (error) {
             return res.status(500).send('Error deleting design'); //status: internal server error
         }
+        //set the environment type
+        var environment = process.env.NODE_ENV == 'production' ? 'prod' : 'dev';
         //delete the image
         var s3 = new _aws2.default.S3();
         var params = {
             Bucket: process.env.BUCKET_NAME,
             Delete: {
                 Objects: [{
-                    Key: 'designImage/' + req.params.id
+                    Key: 'designImage/' + environment + '/' + req.params.id
                 }]
             }
         };

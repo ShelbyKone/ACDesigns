@@ -229,6 +229,8 @@ export function deleteDesign(req, res) {
         if (error) {
             return res.status(500).send('Error deleting design') //status: internal server error
         }
+        //set the environment type
+        const environment = (process.env.NODE_ENV == 'production') ? 'prod' : 'dev'
         //delete the image
         const s3 = new aws.S3();
         var params = {
@@ -236,7 +238,7 @@ export function deleteDesign(req, res) {
             Delete: {
                 Objects: [
                     {
-                        Key: `designImage/${req.params.id}`,
+                        Key: `designImage/${environment}/${req.params.id}`,
                     }
                 ]
             }
