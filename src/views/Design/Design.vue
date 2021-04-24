@@ -93,8 +93,8 @@
                   <div>
                     <v-icon> mdi-island </v-icon> {{ design.user.islandName }}
                   </div>
-                  <v-card-subtitle class="text-center">{{
-                    design.user.creatorCode
+                  <v-card-subtitle class="text-center d-block text-truncate">{{
+                    design.user.creatorCode ? design.user.creatorCode : '-'
                   }}</v-card-subtitle>
                 </v-card-text>
               </v-card>
